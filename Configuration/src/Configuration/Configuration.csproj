@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net6.0;netstandard2.0;net48</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Authors>Gennadiy Lokhov</Authors>
+        <Copyright>Copyright © Gennadiy Lokhov</Copyright>
+        <Description>Simple INI parser and printer</Description>
+        <PackageId>Configuration.Ini</PackageId>
+        <PackageTags>configuration;ini</PackageTags>
+        <PackageProjectUrl>https://github.com/glokhov/configuration/</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="../../../README.md" Pack="true" Visible="false" PackagePath="/" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Functional.Monad" Version="0.1.2" />
+    </ItemGroup>
+</Project>

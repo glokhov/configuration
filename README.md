@@ -8,12 +8,12 @@ Use the ```global using``` directive for the whole project:
 
 ```csharp
 global using Configuration;
-global using static Configuration.Parser;
+global using static Configuration.Prelude;
 ```
 
 Or the ```using``` directive in a single file: 
 
 ```csharp
 using Configuration;
-using static Configuration.Parser;
+using static Configuration.Prelude;
 ```

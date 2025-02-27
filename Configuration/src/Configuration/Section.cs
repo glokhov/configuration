@@ -1,36 +1,24 @@
-using System.Collections;
 using System.Text;
 
 namespace Configuration;
 
-public sealed class Section : IEnumerable<KeyValue<string, string>>
+public sealed class Section : KeyValueDictionary<string, string>
 {
-    private Dictionary<string, string> Parameters { get; }
-
-    public Section() : this(new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase))
+    public Section()
     {
     }
 
-    private Section(Dictionary<string, string> parameters)
+    public Section(StringComparer comparer) : base(comparer)
     {
-        Parameters = parameters;
     }
 
-    public Option<string> this[string name]
+    public Section(Section section) : base(section)
     {
-        get => Parameters.TryGetValue(name, out var value) ? Some(value) : None;
-        set => value.Match(val => { Parameters[name] = val; }, () => { Parameters.Remove(name); });
     }
-
-    public int Count => Parameters.Count;
-
-    public ICollection<string> Keys => Parameters.Keys;
-
-    public ICollection<string> Values => Parameters.Values;
 
     public Section Merge(Section section)
     {
-        var merge = new Section(Parameters);
+        var merge = new Section(this);
 
         foreach (var (key, value) in section)
         {
@@ -38,11 +26,6 @@ public sealed class Section : IEnumerable<KeyValue<string, string>>
         }
 
         return merge;
-    }
-
-    public IEnumerator<KeyValue<string, string>> GetEnumerator()
-    {
-        return new KeyValueEnumerator<string, string>(Parameters.GetEnumerator());
     }
 
     public override string ToString()
@@ -62,10 +45,5 @@ public sealed class Section : IEnumerable<KeyValue<string, string>>
         }
 
         return builder.ToString();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

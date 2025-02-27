@@ -1,36 +1,24 @@
-using System.Collections;
 using System.Text;
 
 namespace Configuration;
 
-public sealed class Config : IEnumerable<KeyValue<string, Section>>
+public sealed class Config : KeyValueDictionary<string, Section>
 {
-    private Dictionary<string, Section> Sections { get; }
-
-    public Config() : this(new Dictionary<string, Section>(StringComparer.InvariantCultureIgnoreCase))
+    public Config()
     {
     }
 
-    private Config(Dictionary<string, Section> sections)
+    public Config(StringComparer comparer) : base(comparer)
     {
-        Sections = sections;
     }
 
-    public Option<Section> this[string name]
+    public Config(Config config) : base(config)
     {
-        get => Sections.TryGetValue(name, out var value) ? Some(value) : None;
-        set => value.Match(sec => { Sections[name] = sec; }, () => { Sections.Remove(name); });
     }
-
-    public int Count => Sections.Count;
-
-    public ICollection<string> Keys => Sections.Keys;
-
-    public ICollection<Section> Values => Sections.Values;
 
     public Config Merge(Config config)
     {
-        var merge = new Config(Sections);
+        var merge = new Config(this);
 
         foreach (var (key, section) in config)
         {
@@ -38,11 +26,6 @@ public sealed class Config : IEnumerable<KeyValue<string, Section>>
         }
 
         return merge;
-    }
-
-    public IEnumerator<KeyValue<string, Section>> GetEnumerator()
-    {
-        return new KeyValueEnumerator<string, Section>(Sections.GetEnumerator());
     }
 
     public override string ToString()
@@ -63,10 +46,5 @@ public sealed class Config : IEnumerable<KeyValue<string, Section>>
         }
 
         return builder.Remove(builder.Length - Environment.NewLine.Length, Environment.NewLine.Length).ToString();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

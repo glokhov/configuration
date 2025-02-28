@@ -8,7 +8,7 @@ public sealed class Section : KeyValueDictionary<string, string>
     {
     }
 
-    public Section(StringComparer comparer) : base(comparer)
+    public Section(IEqualityComparer<string> comparer) : base(comparer)
     {
     }
 

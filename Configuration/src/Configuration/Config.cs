@@ -8,7 +8,7 @@ public sealed class Config : KeyValueDictionary<string, Section>
     {
     }
 
-    public Config(StringComparer comparer) : base(comparer)
+    public Config(IEqualityComparer<string> comparer) : base(comparer)
     {
     }
 

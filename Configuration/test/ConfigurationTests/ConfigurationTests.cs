@@ -7,13 +7,13 @@ public sealed class ConfigurationTests
     private static readonly string B = "A = aaa" + Environment.NewLine +
                                        "B = bbb" + Environment.NewLine;
 
-    private static readonly string C = "[foo]" + Environment.NewLine +
+    private static readonly string C = "[foo] # foo" + Environment.NewLine +
                                        "C = ccc" + Environment.NewLine +
                                        "D = ddd" + Environment.NewLine;
 
     private static readonly string D = "[bar]" + Environment.NewLine +
                                        "E = eee" + Environment.NewLine +
-                                       "F = fff";
+                                       "F = fff # fff";
 
     private static readonly string X = "xxx" + Environment.NewLine;
 

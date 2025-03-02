@@ -7,7 +7,7 @@ public partial class Configuration
         return Parse(input, new Configuration());
     }
 
-    public static Result<Configuration, string> Parse(string input, StringComparer comparer)
+    public static Result<Configuration, string> Parse(string input, IEqualityComparer<string> comparer)
     {
         return Parse(input, new Configuration(comparer));
     }

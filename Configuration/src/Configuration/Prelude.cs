@@ -14,7 +14,7 @@ public static class Prelude
         }
     }
 
-    public static Result<Configuration, string> Ini(string path, StringComparer comparer)
+    public static Result<Configuration, string> Ini(string path, IEqualityComparer<string> comparer)
     {
         try
         {

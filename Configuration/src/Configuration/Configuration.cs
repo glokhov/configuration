@@ -6,7 +6,7 @@ public sealed partial class Configuration
     {
     }
 
-    private Configuration(StringComparer comparer) : this(new Config(comparer))
+    private Configuration(IEqualityComparer<string> comparer) : this(new Config(comparer))
     {
     }
 

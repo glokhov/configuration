@@ -46,7 +46,16 @@ public partial class Configuration
 
     private static Option<SectionName> ParseSectionName(string line)
     {
-        return line.StartsWith("[") && line.EndsWith("]") ? Some(new SectionName(line[1..^1].Trim())) : None;
+        return IsSection(line) ? Some(new SectionName(line[1..^1].Trim())) : None;
+    }
+
+    private static bool IsSection(string line)
+    {
+#if NET
+        return line.StartsWith('[') && line.EndsWith(']');
+#else
+        return line.StartsWith("[") && line.EndsWith("]");
+#endif
     }
 
     private static Option<Parameter> ParseParameter(string line)

@@ -10,13 +10,13 @@ public sealed class PreludeTests
     [Fact]
     public static void Ini_Returns_Error_If_File_Does_Not_Exist()
     {
-        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path")).Match(_ => throw new Exception(), err => err));
+        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path")).Fail().Error);
     }
 
     [Fact]
     public static void Ini_Comparer_Returns_Error_If_File_Does_Not_Exist()
     {
-        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path"), StringComparer.Ordinal).Match(_ => throw new Exception(), err => err));
+        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path"), StringComparer.Ordinal).Fail().Error);
     }
 
     [Fact]
@@ -26,9 +26,9 @@ public sealed class PreludeTests
 
         File.WriteAllText(temp, Input);
 
-        var ini = Ini(new FileInfo(temp)).Match(ok => ok, _ => throw new Exception());
-        var foo = ini["default", "A"].Match(some => some, () => throw new Exception());
-        var bar = ini["default", "B"].Match(some => some, () => throw new Exception());
+        var ini = Ini(new FileInfo(temp)).Pure().Value;
+        var foo = ini["default", "A"].Pure().Value;
+        var bar = ini["default", "B"].Pure().Value;
 
         try
         {
@@ -48,9 +48,9 @@ public sealed class PreludeTests
 
         File.WriteAllText(temp, Input);
 
-        var ini = Ini(new FileInfo(temp), StringComparer.OrdinalIgnoreCase).Match(ok => ok, _ => throw new Exception());
-        var foo = ini["DEFAULT", "a"].Match(some => some, () => throw new Exception());
-        var bar = ini["DEFAULT", "b"].Match(some => some, () => throw new Exception());
+        var ini = Ini(new FileInfo(temp), StringComparer.OrdinalIgnoreCase).Pure().Value;
+        var foo = ini["DEFAULT", "a"].Pure().Value;
+        var bar = ini["DEFAULT", "b"].Pure().Value;
 
         try
         {
@@ -69,7 +69,7 @@ public sealed class PreludeTests
         var temp = Path.GetTempFileName();
         var file = File.Open(temp, FileMode.Open);
 
-        var error = Ini(new FileInfo(temp)).Match(_ => throw new Exception(), err => err);
+        var error = Ini(new FileInfo(temp)).Fail().Error;
 
         try
         {
@@ -88,7 +88,7 @@ public sealed class PreludeTests
         var temp = Path.GetTempFileName();
         var file = File.Open(temp, FileMode.Open);
 
-        var error = Ini(new FileInfo(temp), StringComparer.Ordinal).Match(_ => throw new Exception(), err => err);
+        var error = Ini(new FileInfo(temp), StringComparer.Ordinal).Fail().Error;
 
         try
         {
@@ -104,9 +104,9 @@ public sealed class PreludeTests
     [Fact]
     public static void Ini_TextReader_Calls_Parse_Path()
     {
-        var ini = Ini(new StringReader(Input)).Match(ok => ok, _ => throw new Exception());
-        var foo = ini["default", "A"].Match(some => some, () => throw new Exception());
-        var bar = ini["default", "B"].Match(some => some, () => throw new Exception());
+        var ini = Ini(new StringReader(Input)).Pure().Value;
+        var foo = ini["default", "A"].Pure().Value;
+        var bar = ini["default", "B"].Pure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -115,9 +115,9 @@ public sealed class PreludeTests
     [Fact]
     public static void Ini_TextReader_Comparer_Calls_Parse_Path_Comparer()
     {
-        var ini = Ini(new StringReader(Input), StringComparer.OrdinalIgnoreCase).Match(ok => ok, _ => throw new Exception());
-        var foo = ini["DEFAULT", "a"].Match(some => some, () => throw new Exception());
-        var bar = ini["DEFAULT", "b"].Match(some => some, () => throw new Exception());
+        var ini = Ini(new StringReader(Input), StringComparer.OrdinalIgnoreCase).Pure().Value;
+        var foo = ini["DEFAULT", "a"].Pure().Value;
+        var bar = ini["DEFAULT", "b"].Pure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -129,7 +129,7 @@ public sealed class PreludeTests
         var stringReader = new StringReader(Input);
         stringReader.Close();
 
-        var error = Ini(stringReader).Match(_ => throw new Exception(), err => err);
+        var error = Ini(stringReader).Fail().Error;
 
         Assert.Contains("Cannot read from a closed TextReader.", error);
     }
@@ -140,7 +140,7 @@ public sealed class PreludeTests
         var stringReader = new StringReader(Input);
         stringReader.Close();
 
-        var error = Ini(stringReader, StringComparer.Ordinal).Match(_ => throw new Exception(), err => err);
+        var error = Ini(stringReader, StringComparer.Ordinal).Fail().Error;
 
         Assert.Contains("Cannot read from a closed TextReader.", error);
     }
@@ -148,9 +148,9 @@ public sealed class PreludeTests
     [Fact]
     public static void Ini_Input_Calls_Parse_Path()
     {
-        var ini = Ini(Input).Match(ok => ok, _ => throw new Exception());
-        var foo = ini["default", "A"].Match(some => some, () => throw new Exception());
-        var bar = ini["default", "B"].Match(some => some, () => throw new Exception());
+        var ini = Ini(Input).Pure().Value;
+        var foo = ini["default", "A"].Pure().Value;
+        var bar = ini["default", "B"].Pure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -159,9 +159,9 @@ public sealed class PreludeTests
     [Fact]
     public static void Ini_Input_Comparer_Calls_Parse_Path_Comparer()
     {
-        var ini = Ini(Input, StringComparer.OrdinalIgnoreCase).Match(ok => ok, _ => throw new Exception());
-        var foo = ini["DEFAULT", "a"].Match(some => some, () => throw new Exception());
-        var bar = ini["DEFAULT", "b"].Match(some => some, () => throw new Exception());
+        var ini = Ini(Input, StringComparer.OrdinalIgnoreCase).Pure().Value;
+        var foo = ini["DEFAULT", "a"].Pure().Value;
+        var bar = ini["DEFAULT", "b"].Pure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);

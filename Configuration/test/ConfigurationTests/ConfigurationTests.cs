@@ -42,13 +42,13 @@ public sealed class ConfigurationTests
     [Fact]
     public void Parse_Empty_String_Returns_Empty_Config()
     {
-        Assert.Equal("Ok()", Configuration.Configuration.Parse("").ToString());
+        Assert.Equal("", Configuration.Configuration.Parse("").Pure().Value.ToString());
     }
 
     [Fact]
     public void Parse_Calls_Default_Configuration_Ctor()
     {
-        var configuration = Configuration.Configuration.Parse(C).Match(ok => ok, _ => throw new Exception());
+        var configuration = Configuration.Configuration.Parse(C).Pure().Value;
 
         Assert.True(configuration["FOO"].IsNone);
         Assert.True(configuration["foo", "c"].IsNone);
@@ -57,7 +57,7 @@ public sealed class ConfigurationTests
     [Fact]
     public void Parse_Calls_Comparer_Configuration_Ctor()
     {
-        var configuration = Configuration.Configuration.Parse(C, StringComparer.OrdinalIgnoreCase).Match(ok => ok, _ => throw new Exception());
+        var configuration = Configuration.Configuration.Parse(C, StringComparer.OrdinalIgnoreCase).Pure().Value;
 
         Assert.True(configuration["FOO"].IsSome);
         Assert.True(configuration["foo", "c"].IsSome);
@@ -66,27 +66,27 @@ public sealed class ConfigurationTests
     [Fact]
     public void Parse_Returns_Error_If_Cannot_Parse_Line()
     {
-        Assert.Equal("Err(Cannot parse line 2: xxx.)", Configuration.Configuration.Parse(A + X).ToString());
+        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Configuration.Parse(A + X).Fail().Error);
     }
 
     [Fact]
     public void Parse_No_Eol_At_End()
     {
-        Assert.Equal($"Ok({ABD})", Configuration.Configuration.Parse(A + B + D).ToString());
+        Assert.Equal($"{ABD}", Configuration.Configuration.Parse(A + B + D).Pure().Value.ToString());
     }
 
     [Fact]
     public void Parse_No_Section_At_Begin()
     {
-        Assert.Equal($"Ok({BC})", Configuration.Configuration.Parse(B + C).ToString());
+        Assert.Equal($"{BC}", Configuration.Configuration.Parse(B + C).Pure().Value.ToString());
     }
 
     [Fact]
-    public void SaveToFile_Saves_And_Returns_Ok()
+    public void WriteTo_Writes_To_File_And_Returns_Ok()
     {
         var temp = Path.GetTempFileName();
 
-        var result = Configuration.Configuration.Parse(ABD).Match(ok => ok, _ => throw new Exception()).SaveToFile(temp);
+        var result = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(new FileInfo(temp));
 
         try
         {
@@ -100,21 +100,34 @@ public sealed class ConfigurationTests
     }
 
     [Fact]
-    public void SaveToFile_Returns_Error_If_Cannot_Save()
+    public void WriteTo_Returns_Error_If_Cannot_Write_To_File()
     {
-        var temp = Path.GetTempFileName();
-        var file = File.Open(temp, FileMode.Open);
+        var temp = Path.GetTempPath();
 
-        var error = Configuration.Configuration.Parse(ABD).Match(ok => ok, _ => throw new Exception()).SaveToFile(temp).Match(_ => throw new Exception(), err => err);
+        var error = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(new FileInfo(temp)).Fail().Error;
 
-        try
-        {
-            Assert.Contains(temp, error);
-        }
-        finally
-        {
-            file.Close();
-            File.Delete(temp);
-        }
+        Assert.Contains(temp, error);
+    }
+
+    [Fact]
+    public void WriteTo_Writes_To_TextWriter_And_Returns_Ok()
+    {
+        var stringWriter = new StringWriter();
+
+        var result = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(stringWriter);
+
+        Assert.True(result.IsOk);
+        Assert.Equal(ABD, stringWriter.ToString());
+    }
+
+    [Fact]
+    public void WriteTo_Returns_Error_If_Cannot_Write_To_TextWriter()
+    {
+        var stringWriter = new StringWriter();
+        stringWriter.Close();
+
+        var error = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(stringWriter).Fail().Error;
+
+        Assert.Contains("Cannot write to a closed TextWriter.", error);
     }
 }

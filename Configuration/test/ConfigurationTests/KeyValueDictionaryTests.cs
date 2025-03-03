@@ -48,8 +48,8 @@ public sealed class KeyValueDictionaryTests
         var none = dictionary["key"] = None;
 
         Assert.True(before.IsNone);
-        Assert.Equal("Some(add)", add.ToString());
-        Assert.Equal("Some(update)", update.ToString());
+        Assert.Equal("add", add.Pure().Value);
+        Assert.Equal("update", update.Pure().Value);
         Assert.True(none.IsNone);
     }
 
@@ -75,8 +75,8 @@ public sealed class KeyValueDictionaryTests
         var add = dictionary.Add("key", "add");
         var update = dictionary.Add("key", "update");
 
-        Assert.Equal("Some(add)", add.ToString());
-        Assert.Equal("Some(update)", update.ToString());
+        Assert.Equal("add", add.Pure().Value);
+        Assert.Equal("update", update.Pure().Value);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public sealed class KeyValueDictionaryTests
         var value = dictionary.Remove("key");
         var none = dictionary.Remove("key");
 
-        Assert.Equal("Some(value)", value.ToString());
+        Assert.Equal("value", value.Pure().Value);
         Assert.True(none.IsNone);
     }
 
@@ -99,7 +99,7 @@ public sealed class KeyValueDictionaryTests
         var value = dictionary.Get("key");
         var none = dictionary.Get("abc");
 
-        Assert.Equal("Some(value)", value.ToString());
+        Assert.Equal("value", value.Pure().Value);
         Assert.True(none.IsNone);
     }
 

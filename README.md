@@ -1,33 +1,23 @@
 # INI configuration file
-
 Simple INI parser and printer.
-
 ## Getting started
-
 Use the ```global using``` directive for the whole project:
-
 ```csharp
 global using Configuration;
 global using static Configuration.Prelude;
 ```
-
 Or the ```using``` directive in a single file: 
-
 ```csharp
 using Configuration;
 using static Configuration.Prelude;
 ```
-
 Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` 
-that will be used to determine equality of keys in the configuration.
-
+that will be used to determine equality of keys in the configuration:
 ```csharp
-var ini = Ini("Configuration.ini");
-var ini = Ini("Configuration.ini", StringComparer.OrdinalIgnoreCase);
+var ini = Ini(new FileInfo("Configuration.ini"));
+var ini = Ini(new FileInfo("Configuration.ini"), StringComparer.OrdinalIgnoreCase);
 ```
-
-Sample ```Configuration.ini``` content:
-
+Initial Configuration.ini content:
 ```ini
 [section_one]
 
@@ -40,18 +30,60 @@ KeyTwo = SectionOne_ValueTwo
 
 KeyOne = SectionTwo_ValueOne
 KeyTwo = SectionTwo_ValueTwo
+KeyThree = SectionTwo_ValueThree
+
+[section_three]
+
+KeyOne = SectionThree_ValueOne
+KeyTwo = SectionThree_ValueTwo
 ```
-
-Get value associated with the ```section```/```key``` combination.
-
+Get value associated with the ```section```/```key``` combination:
 ```csharp
-var ini = Ini("Configuration.ini");
+var one_one     = ini["section_one", "KeyOne"];
+var two_two     = ini["section_two", "KeyTwo"];
+var three_three = ini["section_three", "KeyThree"];
 
-var one   = ini["section_one", "KeyOne"];
-var two   = ini["section_two", "KeyTwo"];
-var three = ini["section_three", "KeyThree"];
+Console.WriteLine(one_one);     // Some(SectionOne_ValueOne)
+Console.WriteLine(two_two);     // Some(SectionTwo_ValueTwo)
+Console.WriteLine(three_three); // None
+```
+Set ```Some()``` to edit ```value```:
+```csharp
+ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Edited");
 
-Console.WriteLine(one);   // Some(SectionOne_ValueOne)
-Console.WriteLine(two);   // Some(SectionTwo_ValueTwo)
-Console.WriteLine(three); // None
+one_one = ini["section_one", "KeyOne"];
+
+Console.WriteLine(one_one); // Some(SectionOne_ValueOne_Edited)
+```
+Set ```None``` to remove ```value```:
+```csharp
+ini["section_two", "KeyThree"] = None;
+
+var two_three = ini["section_two", "KeyThree"];
+
+Console.WriteLine(two_three); // None
+```
+Set ```None``` to remove ```section```:
+```csharp
+ini["section_three"] = None;
+
+var three = ini["section_three"];
+
+Console.WriteLine(two_three); // None
+```
+Save configuration to a file:
+```csharp
+ini.SaveToFile("Configuration.ini");
+```
+Configuration.ini content:
+```ini
+[section_one]
+
+KeyOne = SectionOne_ValueOne_Edited
+KeyTwo = SectionOne_ValueTwo
+
+[section_two]
+
+KeyOne = SectionTwo_ValueOne
+KeyTwo = SectionTwo_ValueTwo
 ```

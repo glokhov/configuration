@@ -80,4 +80,41 @@ public sealed class ConfigurationTests
     {
         Assert.Equal($"Ok({BC})", Configuration.Configuration.Parse(B + C).ToString());
     }
+
+    [Fact]
+    public void SaveToFile_Saves_And_Returns_Ok()
+    {
+        var temp = Path.GetTempFileName();
+
+        var result = Configuration.Configuration.Parse(ABD).Match(ok => ok, _ => throw new Exception()).SaveToFile(temp);
+
+        try
+        {
+            Assert.True(result.IsOk);
+            Assert.Equal(ABD, File.ReadAllText(temp));
+        }
+        finally
+        {
+            File.Delete(temp);
+        }
+    }
+
+    [Fact]
+    public void SaveToFile_Returns_Error_If_Cannot_Save()
+    {
+        var temp = Path.GetTempFileName();
+        var file = File.Open(temp, FileMode.Open);
+
+        var error = Configuration.Configuration.Parse(ABD).Match(ok => ok, _ => throw new Exception()).SaveToFile(temp).Match(_ => throw new Exception(), err => err);
+
+        try
+        {
+            Assert.Contains(temp, error);
+        }
+        finally
+        {
+            file.Close();
+            File.Delete(temp);
+        }
+    }
 }

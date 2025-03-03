@@ -51,7 +51,11 @@ public abstract class KeyValueDictionary<TKey, TValue>(Dictionary<TKey, TValue> 
 
     public Option<TValue> Remove(TKey key)
     {
+#if NET
+        return Dictionary.Remove(key, out var value) ? Some(value) : None;
+#else
         return Dictionary.TryGetValue(key, out var value) && Dictionary.Remove(key) ? Some(value) : None;
+#endif
     }
 
     public Option<TValue> Get(TKey key)

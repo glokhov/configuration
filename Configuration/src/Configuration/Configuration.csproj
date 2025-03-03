@@ -9,7 +9,7 @@
         <Description>Simple INI parser and printer</Description>
         <PackageId>Configuration.Ini</PackageId>
         <PackageTags>configuration;ini</PackageTags>
-        <PackageProjectUrl>https://github.com/glokhov/configuration/</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/glokhov/configuration</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>

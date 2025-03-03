@@ -1,6 +1,8 @@
 namespace Configuration;
 
 public interface IKeyValueDictionary<TKey, TValue> : IEnumerable<KeyValue<TKey, TValue>>
+    where TKey : notnull
+    where TValue : notnull
 {
     Option<TValue> this[TKey key] { get; set; }
 

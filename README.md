@@ -1,4 +1,4 @@
-# INI configuration file [![Nuget](https://img.shields.io/nuget/v/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini)
+# INI configuration file [![Nuget](https://img.shields.io/nuget/v/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini) [![Nuget](https://img.shields.io/nuget/dt/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini)
 Simple INI parser and printer.
 ## Getting started
 Use the ```global using``` directive for the whole project:
@@ -55,6 +55,14 @@ one_one = ini["section_one", "KeyOne"];
 
 Console.WriteLine(one_one); // Some(SectionOne_ValueOne_Edited)
 ```
+Set ```Some()``` to add ```value```:
+```csharp
+ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
+
+var one_three = ini["section_one", "KeyThree"];
+
+Console.WriteLine(one_three); // Some(SectionOne_ValueThree_Added)
+```
 Set ```None``` to remove ```value```:
 ```csharp
 ini["section_two", "KeyThree"] = None;
@@ -75,12 +83,13 @@ Save configuration to a file:
 ```csharp
 ini.SaveToFile("Configuration.ini");
 ```
-Configuration.ini content:
+Final Configuration.ini content:
 ```ini
 [section_one]
 
 KeyOne = SectionOne_ValueOne_Edited
 KeyTwo = SectionOne_ValueTwo
+KeyThree = SectionOne_ValueThree_Added
 
 [section_two]
 

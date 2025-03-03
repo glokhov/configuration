@@ -1,4 +1,4 @@
-# INI configuration file
+# INI configuration file [![Nuget](https://img.shields.io/nuget/v/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini)
 Simple INI parser and printer.
 ## Getting started
 Use the ```global using``` directive for the whole project:

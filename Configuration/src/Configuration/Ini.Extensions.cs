@@ -1,13 +1,13 @@
 namespace Configuration;
 
-public static class ConfigurationExtensions
+public static class IniExtensions
 {
-    public static Result<Unit, string> WriteTo(this Configuration configuration, FileInfo fileInfo)
+    public static Result<Unit, string> WriteTo(this Ini ini, FileInfo fileInfo)
     {
         try
         {
             using var textWriter = fileInfo.CreateText();
-            return configuration.WriteTo(textWriter);
+            return ini.WriteTo(textWriter);
         }
         catch (Exception exception)
         {
@@ -15,11 +15,11 @@ public static class ConfigurationExtensions
         }
     }
 
-    public static Result<Unit, string> WriteTo(this Configuration configuration, TextWriter textWriter)
+    public static Result<Unit, string> WriteTo(this Ini ini, TextWriter textWriter)
     {
         try
         {
-            textWriter.Write(configuration.ToString());
+            textWriter.Write(ini.ToString());
             textWriter.Flush();
         }
         catch (Exception exception)

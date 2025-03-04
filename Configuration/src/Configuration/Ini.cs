@@ -1,16 +1,16 @@
 namespace Configuration;
 
-public sealed partial class Configuration
+public sealed partial class Ini
 {
-    public Configuration() : this(new Config())
+    public Ini() : this(new Config())
     {
     }
 
-    public Configuration(IEqualityComparer<string> comparer) : this(new Config(comparer))
+    public Ini(IEqualityComparer<string> comparer) : this(new Config(comparer))
     {
     }
 
-    private Configuration(Config config)
+    private Ini(Config config)
     {
         Config = config;
         Comparer = config.Comparer;

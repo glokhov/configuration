@@ -1,18 +1,18 @@
 namespace Configuration;
 
-public partial class Configuration
+public partial class Ini
 {
-    public static Result<Configuration, string> Parse(string input)
+    public static Result<Ini, string> Parse(string input)
     {
-        return Parse(input, new Configuration());
+        return Parse(input, new Ini());
     }
 
-    public static Result<Configuration, string> Parse(string input, IEqualityComparer<string> comparer)
+    public static Result<Ini, string> Parse(string input, IEqualityComparer<string> comparer)
     {
-        return Parse(input, new Configuration(comparer));
+        return Parse(input, new Ini(comparer));
     }
 
-    private static Result<Configuration, string> Parse(string input, Configuration configuration)
+    private static Result<Ini, string> Parse(string input, Ini ini)
     {
         var section = "default";
 
@@ -31,16 +31,16 @@ public partial class Configuration
             return Err($"Cannot parse line {number}: {line}.");
         }
 
-        return Ok(configuration);
+        return Ok(ini);
 
         Option<Section> CreateSection(SectionName sectionName)
         {
-            return configuration[section = sectionName.Name] = Some(new Section(configuration.Comparer));
+            return ini[section = sectionName.Name] = Some(new Section(ini.Comparer));
         }
 
         Option<string> AddOrUpdateParameter(Parameter parameter)
         {
-            return configuration[section, parameter.Key] = Some(parameter.Value);
+            return ini[section, parameter.Key] = Some(parameter.Value);
         }
     }
 

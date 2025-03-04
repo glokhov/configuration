@@ -14,12 +14,12 @@ using static Configuration.Prelude;
 Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` 
 that will be used to determine equality of keys in the configuration:
 ```csharp
-Result<Configuration, string> ini = Ini(new FileInfo("Configuration.ini"));
-Result<Configuration, string> ini = Ini(new FileInfo("Configuration.ini"), StringComparer.OrdinalIgnoreCase);
+Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"));
+Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"), StringComparer.OrdinalIgnoreCase);
 ```
-Use ```Match()``` function to extract ```Configuration```:
+Use ```Match()``` function to extract configuration:
 ```csharp
-Configuration conf = ini.Match(conf => conf, err => throw new ApplicationException(err));
+Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
 ```
 Initial Configuration.ini content:
 ```ini
@@ -43,9 +43,9 @@ KeyTwo = SectionThree_ValueTwo
 ```
 Get value associated with the ```section```/```key``` combination:
 ```csharp
-Option<string> one_one     = conf["section_one", "KeyOne"];
-Option<string> two_two     = conf["section_two", "KeyTwo"];
-Option<string> three_three = conf["section_three", "KeyThree"];
+Option<string> one_one     = ini["section_one", "KeyOne"];
+Option<string> two_two     = ini["section_two", "KeyTwo"];
+Option<string> three_three = ini["section_three", "KeyThree"];
 
 Console.WriteLine(one_one);     // Some(SectionOne_ValueOne)
 Console.WriteLine(two_two);     // Some(SectionTwo_ValueTwo)
@@ -64,39 +64,39 @@ string three_three_value = three_three.Match(some => some, "none"); // "none"
 ```
 Set ```Some()``` to edit ```value```:
 ```csharp
-conf["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Edited");
+ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Edited");
 
-one_one = conf["section_one", "KeyOne"];
+one_one = ini["section_one", "KeyOne"];
 
 one_one_value = one_one.Match(some => some, "none"); // "SectionOne_ValueOne_Edited"
 ```
 Set ```Some()``` to add ```value```:
 ```csharp
-conf["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
+ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
 
-Option<string> one_three = conf["section_one", "KeyThree"];
+Option<string> one_three = ini["section_one", "KeyThree"];
 
 string one_three_value = one_three.Match(some => some, "none"); // "SectionOne_ValueThree_Added"
 ```
 Set ```None``` to remove ```value```:
 ```csharp
-conf["section_two", "KeyThree"] = None;
+ini["section_two", "KeyThree"] = None;
 
-Option<string> two_three = conf["section_two", "KeyThree"];
+Option<string> two_three = ini["section_two", "KeyThree"];
 
 string two_three_value = two_three.Match(some => some, "none"); // "none"
 ```
 Set ```None``` to remove ```section```:
 ```csharp
-conf["section_three"] = None;
+ini["section_three"] = None;
 
-Option<Section> three = conf["section_three"];
+Option<Section> three = ini["section_three"];
 
 bool three_is_none = three.IsNone; // true
 ```
 Write configuration to a file:
 ```csharp
-conf.WriteTo(new FileInfo("Configuration.ini"));
+ini.WriteTo(new FileInfo("Configuration.ini"));
 ```
 Final Configuration.ini content:
 ```ini

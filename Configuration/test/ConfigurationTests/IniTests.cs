@@ -1,6 +1,6 @@
 namespace ConfigurationTests;
 
-public sealed class ConfigurationTests
+public sealed class IniTests
 {
     private static readonly string A = "[default]" + Environment.NewLine;
 
@@ -42,25 +42,25 @@ public sealed class ConfigurationTests
     [Fact]
     public void Default_Ctor()
     {
-        Assert.Equal("", new Configuration.Configuration().ToString());
+        Assert.Equal("", new Ini().ToString());
     }
 
     [Fact]
     public void Comparer_Ctor()
     {
-        Assert.Equal("", new Configuration.Configuration(StringComparer.Ordinal).ToString());
+        Assert.Equal("", new Ini(StringComparer.Ordinal).ToString());
     }
 
     [Fact]
     public void Parse_Empty_String_Returns_Empty_Config()
     {
-        Assert.Equal("", Configuration.Configuration.Parse("").Pure().Value.ToString());
+        Assert.Equal("", Configuration.Ini.Parse("").Pure().Value.ToString());
     }
 
     [Fact]
     public void Parse_Calls_Default_Configuration_Ctor()
     {
-        var configuration = Configuration.Configuration.Parse(C).Pure().Value;
+        var configuration = Configuration.Ini.Parse(C).Pure().Value;
 
         Assert.True(configuration["FOO"].IsNone);
         Assert.True(configuration["foo", "c"].IsNone);
@@ -69,28 +69,28 @@ public sealed class ConfigurationTests
     [Fact]
     public void Parse_Calls_Comparer_Configuration_Ctor()
     {
-        var configuration = Configuration.Configuration.Parse(C, StringComparer.OrdinalIgnoreCase).Pure().Value;
+        var ini = Configuration.Ini.Parse(C, StringComparer.OrdinalIgnoreCase).Pure().Value;
 
-        Assert.True(configuration["FOO"].IsSome);
-        Assert.True(configuration["foo", "c"].IsSome);
+        Assert.True(ini["FOO"].IsSome);
+        Assert.True(ini["foo", "c"].IsSome);
     }
 
     [Fact]
     public void Parse_Returns_Error_If_Cannot_Parse_Line()
     {
-        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Configuration.Parse(A + X).Fail().Error);
+        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Ini.Parse(A + X).Fail().Error);
     }
 
     [Fact]
     public void Parse_No_Eol_At_End()
     {
-        Assert.Equal($"{ABD}", Configuration.Configuration.Parse(A + B + D).Pure().Value.ToString());
+        Assert.Equal($"{ABD}", Configuration.Ini.Parse(A + B + D).Pure().Value.ToString());
     }
 
     [Fact]
     public void Parse_No_Section_At_Begin()
     {
-        Assert.Equal($"{BC}", Configuration.Configuration.Parse(B + C).Pure().Value.ToString());
+        Assert.Equal($"{BC}", Configuration.Ini.Parse(B + C).Pure().Value.ToString());
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public sealed class ConfigurationTests
     {
         var temp = Path.GetTempFileName();
 
-        var result = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(new FileInfo(temp));
+        var result = Configuration.Ini.Parse(ABD).Pure().Value.WriteTo(new FileInfo(temp));
 
         try
         {
@@ -116,7 +116,7 @@ public sealed class ConfigurationTests
     {
         var temp = Path.GetTempPath();
 
-        var error = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(new FileInfo(temp)).Fail().Error;
+        var error = Configuration.Ini.Parse(ABD).Pure().Value.WriteTo(new FileInfo(temp)).Fail().Error;
 
         Assert.Contains(temp, error);
     }
@@ -126,7 +126,7 @@ public sealed class ConfigurationTests
     {
         var stringWriter = new StringWriter();
 
-        var result = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(stringWriter);
+        var result = Configuration.Ini.Parse(ABD).Pure().Value.WriteTo(stringWriter);
 
         Assert.True(result.IsOk);
         Assert.Equal(ABD, stringWriter.ToString());
@@ -138,7 +138,7 @@ public sealed class ConfigurationTests
         var stringWriter = new StringWriter();
         stringWriter.Close();
 
-        var error = Configuration.Configuration.Parse(ABD).Pure().Value.WriteTo(stringWriter).Fail().Error;
+        var error = Configuration.Ini.Parse(ABD).Pure().Value.WriteTo(stringWriter).Fail().Error;
 
         Assert.Contains("Cannot write to a closed TextWriter.", error);
     }

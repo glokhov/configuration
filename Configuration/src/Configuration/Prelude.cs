@@ -2,7 +2,7 @@ namespace Configuration;
 
 public static class Prelude
 {
-    public static Result<Configuration, string> Ini(FileInfo fileInfo)
+    public static Result<Ini, string> Ini(FileInfo fileInfo)
     {
         try
         {
@@ -14,7 +14,7 @@ public static class Prelude
         }
     }
 
-    public static Result<Configuration, string> Ini(FileInfo fileInfo, IEqualityComparer<string> comparer)
+    public static Result<Ini, string> Ini(FileInfo fileInfo, IEqualityComparer<string> comparer)
     {
         try
         {
@@ -26,7 +26,7 @@ public static class Prelude
         }
     }
 
-    public static Result<Configuration, string> Ini(TextReader textReader)
+    public static Result<Ini, string> Ini(TextReader textReader)
     {
         try
         {
@@ -42,7 +42,7 @@ public static class Prelude
         }
     }
 
-    public static Result<Configuration, string> Ini(TextReader textReader, IEqualityComparer<string> comparer)
+    public static Result<Ini, string> Ini(TextReader textReader, IEqualityComparer<string> comparer)
     {
         try
         {
@@ -58,13 +58,13 @@ public static class Prelude
         }
     }
 
-    public static Result<Configuration, string> Ini(string input)
+    public static Result<Ini, string> Ini(string input)
     {
-        return Configuration.Parse(input);
+        return Configuration.Ini.Parse(input);
     }
 
-    public static Result<Configuration, string> Ini(string input, IEqualityComparer<string> comparer)
+    public static Result<Ini, string> Ini(string input, IEqualityComparer<string> comparer)
     {
-        return Configuration.Parse(input, comparer);
+        return Configuration.Ini.Parse(input, comparer);
     }
 }

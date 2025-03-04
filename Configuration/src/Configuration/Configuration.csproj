@@ -14,7 +14,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/glokhov/configuration.git</RepositoryUrl>
-        <Version>0.1.2</Version>
+        <Version>0.1.3</Version>
     </PropertyGroup>
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48'">
         <PackageReference Include="IndexRange" Version="1.0.3" />

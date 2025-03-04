@@ -1,6 +1,6 @@
 namespace Configuration;
 
-public sealed partial class Ini
+public sealed partial class Ini(Config config)
 {
     public Ini() : this(new Config())
     {
@@ -10,15 +10,9 @@ public sealed partial class Ini
     {
     }
 
-    private Ini(Config config)
-    {
-        Config = config;
-        Comparer = config.Comparer;
-    }
+    public Config Config { get; } = config;
 
-    private Config Config { get; }
-
-    private IEqualityComparer<string> Comparer { get; }
+    public IEqualityComparer<string> Comparer { get; } = config.Comparer;
 
     public Option<Section> this[string section]
     {

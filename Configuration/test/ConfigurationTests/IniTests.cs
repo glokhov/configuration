@@ -42,13 +42,19 @@ public sealed class IniTests
     [Fact]
     public void Default_Ctor()
     {
-        Assert.Equal("", new Ini().ToString());
+        var ini = new Ini();
+
+        Assert.Empty(ini.Config);
+        Assert.Equal("StringEqualityComparer", ini.Comparer.GetType().Name);
     }
 
     [Fact]
     public void Comparer_Ctor()
     {
-        Assert.Equal("", new Ini(StringComparer.Ordinal).ToString());
+        var ini = new Ini(StringComparer.Ordinal);
+
+        Assert.Empty(ini.Config);
+        Assert.Equal("OrdinalCaseSensitiveComparer", ini.Comparer.GetType().Name);
     }
 
     [Fact]

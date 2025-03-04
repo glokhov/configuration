@@ -40,6 +40,18 @@ public sealed class ConfigurationTests
                                         "D = ddd" + Environment.NewLine;
 
     [Fact]
+    public void Default_Ctor()
+    {
+        Assert.Equal("", new Configuration.Configuration().ToString());
+    }
+
+    [Fact]
+    public void Comparer_Ctor()
+    {
+        Assert.Equal("", new Configuration.Configuration(StringComparer.Ordinal).ToString());
+    }
+
+    [Fact]
     public void Parse_Empty_String_Returns_Empty_Config()
     {
         Assert.Equal("", Configuration.Configuration.Parse("").Pure().Value.ToString());

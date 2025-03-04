@@ -2,11 +2,11 @@ namespace Configuration;
 
 public sealed partial class Configuration
 {
-    private Configuration() : this(new Config())
+    public Configuration() : this(new Config())
     {
     }
 
-    private Configuration(IEqualityComparer<string> comparer) : this(new Config(comparer))
+    public Configuration(IEqualityComparer<string> comparer) : this(new Config(comparer))
     {
     }
 

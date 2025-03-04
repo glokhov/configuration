@@ -111,3 +111,5 @@ KeyThree = SectionOne_ValueThree_Added
 KeyOne = SectionTwo_ValueOne
 KeyTwo = SectionTwo_ValueTwo
 ```
+### Sample
+See [GettingStarted](https://github.com/glokhov/configuration/blob/main/Configuration/test/ConfigurationTests/ReadMeTests.cs) test.

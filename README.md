@@ -3,12 +3,16 @@ Simple INI parser and printer.
 ## Getting started
 Use the ```global using``` directive for the whole project:
 ```csharp
+global using Functional;
 global using Configuration;
+global using static Functional.Prelude;
 global using static Configuration.Prelude;
 ```
 Or the ```using``` directive in a single file: 
 ```csharp
+using Functional;
 using Configuration;
+using static Functional.Prelude;
 using static Configuration.Prelude;
 ```
 Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` 
@@ -41,7 +45,7 @@ KeyThree = SectionTwo_ValueThree
 KeyOne = SectionThree_ValueOne
 KeyTwo = SectionThree_ValueTwo
 ```
-Get value associated with the ```section```/```key``` combination:
+Get ```value``` associated with the ```section```/```key``` combination:
 ```csharp
 Option<string> one_one     = ini["section_one", "KeyOne"];
 Option<string> two_two     = ini["section_two", "KeyTwo"];

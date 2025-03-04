@@ -1,29 +1,19 @@
 # INI configuration file [![Nuget Version](https://img.shields.io/nuget/v/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini) [![Nuget Download](https://img.shields.io/nuget/dt/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini)
-Simple INI parser and printer.
+Simple INI parser and writer.
 ## Getting started
-Use the ```global using``` directive for the whole project:
+Use ```global using``` directive for the whole project:
 ```csharp
 global using Functional;
 global using Configuration;
 global using static Functional.Prelude;
 global using static Configuration.Prelude;
 ```
-Or the ```using``` directive in a single file: 
+Or ```using``` directive in the single file: 
 ```csharp
 using Functional;
 using Configuration;
 using static Functional.Prelude;
 using static Configuration.Prelude;
-```
-Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` 
-that will be used to determine equality of keys in the configuration:
-```csharp
-Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"));
-Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"), StringComparer.OrdinalIgnoreCase);
-```
-Use ```Match()``` function to extract configuration:
-```csharp
-Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
 ```
 Initial Configuration.ini content:
 ```ini
@@ -45,75 +35,96 @@ KeyThree = SectionTwo_ValueThree
 KeyOne = SectionThree_ValueOne
 KeyTwo = SectionThree_ValueTwo
 ```
-Get ```value``` associated with the ```section```/```key``` combination:
+Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` that will be used to determine equality of keys in the configuration:
 ```csharp
-Option<string> one_one     = ini["section_one", "KeyOne"];
-Option<string> two_two     = ini["section_two", "KeyTwo"];
-Option<string> three_three = ini["section_three", "KeyThree"];
+Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"));
+```
+Use ```Match()``` function to extract the configuration:
+```csharp
+Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
+```
+Use ```Item[section]``` property to get a section:
+```csharp
+Option<Section> one = ini["section_one"];
+Option<Section> four = ini["section_four"];
 
-Console.WriteLine(one_one);     // Some(SectionOne_ValueOne)
-Console.WriteLine(two_two);     // Some(SectionTwo_ValueTwo)
-Console.WriteLine(three_three); // None
-```
-Use ```IsSome``` and ```IsNone``` properties to check, if ```value``` exists:
-```csharp
-bool one_one_is_some     = one_one.IsSome;     // true
-bool three_three_is_some = three_three.IsSome; // false
-bool three_three_is_none = three_three.IsNone; // true
-```
-Use ```Match()``` function, to extract ```value```:
-```csharp
-string one_one_value     = one_one.Match(some => some, "none");     // "SectionOne_ValueOne"
-string three_three_value = three_three.Match(some => some, "none"); // "none"
-```
-Set ```Some()``` to edit ```value```:
-```csharp
-ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Edited");
+bool oneIsSome = one.IsSome;
+bool fourIsNone = four.IsNone;
 
-one_one = ini["section_one", "KeyOne"];
-
-one_one_value = one_one.Match(some => some, "none"); // "SectionOne_ValueOne_Edited"
+Assert.True(oneIsSome);
+Assert.True(fourIsNone);
 ```
-Set ```Some()``` to add ```value```:
+Use ```Item[section, key]``` property to get a value:
+```csharp
+Option<string> oneOne = ini["section_one", "KeyOne"];
+Option<string> twoTwo = ini["section_two", "KeyTwo"];
+Option<string> threeThree = ini["section_three", "KeyThree"];
+
+Assert.Equal("Some(SectionOne_ValueOne)", oneOne.ToString());
+Assert.Equal("Some(SectionTwo_ValueTwo)", twoTwo.ToString());
+Assert.Equal("None", threeThree.ToString());
+```
+Use ```IsSome``` and ```IsNone``` properties to check, if the value exists:
+```csharp
+bool oneOneIsSome = oneOne.IsSome;
+bool threeThreeIsSome = threeThree.IsSome;
+bool threeThreeIsNone = threeThree.IsNone;
+
+Assert.True(oneOneIsSome);
+Assert.False(threeThreeIsSome);
+Assert.True(threeThreeIsNone);
+```
+Call ```Match()``` function to extract the value, if exists:
+```csharp
+string oneOneValue = oneOne.Match(some => some, "none");
+string threeThreeValue = threeThree.Match(some => some, "none");
+
+Assert.Equal("SectionOne_ValueOne", oneOneValue);
+Assert.Equal("none", threeThreeValue);
+```
+Set ```Some(value)``` to change the value:
+```csharp
+ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Changed");
+
+Option<string> oneOneChanged = ini["section_one", "KeyOne"];
+
+string oneOneValueChanged = oneOneChanged.Match(some => some, "none");
+
+Assert.Equal("SectionOne_ValueOne_Changed", oneOneValueChanged);
+```
+Set ```Some(value)``` to add new value:
 ```csharp
 ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
 
-Option<string> one_three = ini["section_one", "KeyThree"];
+Option<string> oneThree = ini["section_one", "KeyThree"];
 
-string one_three_value = one_three.Match(some => some, "none"); // "SectionOne_ValueThree_Added"
+string oneThreeValue = oneThree.Match(some => some, "none");
+
+Assert.Equal("SectionOne_ValueThree_Added", oneThreeValue);
 ```
-Set ```None``` to remove ```value```:
+Set ```None``` to remove the value:
 ```csharp
 ini["section_two", "KeyThree"] = None;
 
-Option<string> two_three = ini["section_two", "KeyThree"];
+Option<string> twoThree = ini["section_two", "KeyThree"];
 
-string two_three_value = two_three.Match(some => some, "none"); // "none"
+string twoThreeValue = twoThree.Match(some => some, "none");
+
+Assert.Equal("none", twoThreeValue);
 ```
-Set ```None``` to remove ```section```:
+Set ```None``` to remove the section:
 ```csharp
 ini["section_three"] = None;
 
 Option<Section> three = ini["section_three"];
 
-bool three_is_none = three.IsNone; // true
+bool threeIsNone = three.IsNone;
+
+Assert.True(threeIsNone);
 ```
-Write configuration to a file:
+Write configuration to the file:
 ```csharp
 ini.WriteTo(new FileInfo("Configuration.ini"));
-```
-Final Configuration.ini content:
-```ini
-[section_one]
-
-KeyOne   = SectionOne_ValueOne_Edited
-KeyTwo   = SectionOne_ValueTwo
-KeyThree = SectionOne_ValueThree_Added
-
-[section_two]
-
-KeyOne = SectionTwo_ValueOne
-KeyTwo = SectionTwo_ValueTwo
 ```
 ### Sample
 See [GettingStarted](https://github.com/glokhov/configuration/blob/main/Configuration/test/ConfigurationTests/ReadMeTests.cs) test.

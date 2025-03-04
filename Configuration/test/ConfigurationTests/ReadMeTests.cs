@@ -1,10 +1,12 @@
-// ReSharper disable All
+// ReSharper disable SuggestVarOrType_Elsewhere
+// ReSharper disable SuggestVarOrType_SimpleTypes
+// ReSharper disable SuggestVarOrType_BuiltInTypes
 
 namespace ConfigurationTests;
 
 public sealed class ReadMeTests : IDisposable
 {
-    private readonly static string InitialContent = "[section_one]" + Environment.NewLine +
+    private static readonly string InitialContent = "[section_one]" + Environment.NewLine +
                                                     "" + Environment.NewLine +
                                                     "# Comment" + Environment.NewLine +
                                                     "" + Environment.NewLine +
@@ -22,9 +24,9 @@ public sealed class ReadMeTests : IDisposable
                                                     "KeyOne = SectionThree_ValueOne" + Environment.NewLine +
                                                     "KeyTwo = SectionThree_ValueTwo" + Environment.NewLine;
 
-    private readonly static string FinalContent = "[section_one]" + Environment.NewLine +
+    private static readonly string FinalContent = "[section_one]" + Environment.NewLine +
                                                   "" + Environment.NewLine +
-                                                  "KeyOne   = SectionOne_ValueOne_Edited" + Environment.NewLine +
+                                                  "KeyOne   = SectionOne_ValueOne_Changed" + Environment.NewLine +
                                                   "KeyTwo   = SectionOne_ValueTwo" + Environment.NewLine +
                                                   "KeyThree = SectionOne_ValueThree_Added" + Environment.NewLine +
                                                   "" + Environment.NewLine +
@@ -47,68 +49,92 @@ public sealed class ReadMeTests : IDisposable
 
         Result<Ini, string> result = Ini(new FileInfo(_tempFile));
 
-        // Use Match() function to extract configuration:
+        // Use Match() function to extract the configuration:
 
         Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
 
-        // Get value associated with the section/key combination:
+        // Use Item[section] property to get a section:
 
-        Option<string> one_one = ini["section_one", "KeyOne"];
-        Option<string> two_two = ini["section_two", "KeyTwo"];
-        Option<string> three_three = ini["section_three", "KeyThree"];
+        Option<Section> one = ini["section_one"];
+        Option<Section> four = ini["section_four"];
 
-        Console.WriteLine(one_one); // Some(SectionOne_ValueOne)
-        Console.WriteLine(two_two); // Some(SectionTwo_ValueTwo)
-        Console.WriteLine(three_three); // None
+        bool oneIsSome = one.IsSome;
+        bool fourIsNone = four.IsNone;
 
-        // Use IsSome and IsNone properties to check, if value exists:
+        Assert.True(oneIsSome);
+        Assert.True(fourIsNone);
 
-        bool one_one_is_some = one_one.IsSome; // true
-        bool three_three_is_some = three_three.IsSome; // false
-        bool three_three_is_none = three_three.IsNone; // true
+        // Use Item[section, key] property to get a value:
 
-        // Use Match() function, to extract value:
+        Option<string> oneOne = ini["section_one", "KeyOne"];
+        Option<string> twoTwo = ini["section_two", "KeyTwo"];
+        Option<string> threeThree = ini["section_three", "KeyThree"];
 
-        string one_one_value = one_one.Match(some => some, "none"); // "SectionOne_ValueOne"
-        string three_three_value = three_three.Match(some => some, "none"); // "none"
+        Assert.Equal("Some(SectionOne_ValueOne)", oneOne.ToString());
+        Assert.Equal("Some(SectionTwo_ValueTwo)", twoTwo.ToString());
+        Assert.Equal("None", threeThree.ToString());
 
-        // Set Some() to edit value:
+        // Use IsSome and IsNone properties to check, if the value exists:
 
-        ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Edited");
+        bool oneOneIsSome = oneOne.IsSome;
+        bool threeThreeIsSome = threeThree.IsSome;
+        bool threeThreeIsNone = threeThree.IsNone;
 
-        one_one = ini["section_one", "KeyOne"];
+        Assert.True(oneOneIsSome);
+        Assert.False(threeThreeIsSome);
+        Assert.True(threeThreeIsNone);
 
-        one_one_value = one_one.Match(some => some, "none"); // "SectionOne_ValueOne_Edited"
+        // Call Match() function to extract the value, if exists:
 
-        // Set Some() to add value:
+        string oneOneValue = oneOne.Match(some => some, "none");
+        string threeThreeValue = threeThree.Match(some => some, "none");
+
+        Assert.Equal("SectionOne_ValueOne", oneOneValue);
+        Assert.Equal("none", threeThreeValue);
+
+        // Set Some(value) to change the value:
+
+        ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Changed");
+
+        Option<string> oneOneChanged = ini["section_one", "KeyOne"];
+
+        string oneOneValueChanged = oneOneChanged.Match(some => some, "none");
+
+        Assert.Equal("SectionOne_ValueOne_Changed", oneOneValueChanged);
+
+        // Set Some(value) to add new value:
 
         ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
 
-        Option<string> one_three = ini["section_one", "KeyThree"];
+        Option<string> oneThree = ini["section_one", "KeyThree"];
 
-        string one_three_value = one_three.Match(some => some, "none"); // "SectionOne_ValueThree_Added"
+        string oneThreeValue = oneThree.Match(some => some, "none");
 
-        // Set None to remove value:
+        Assert.Equal("SectionOne_ValueThree_Added", oneThreeValue);
+
+        // Set None to remove the value:
 
         ini["section_two", "KeyThree"] = None;
 
-        Option<string> two_three = ini["section_two", "KeyThree"];
+        Option<string> twoThree = ini["section_two", "KeyThree"];
 
-        string two_three_value = two_three.Match(some => some, "none"); // "none"
+        string twoThreeValue = twoThree.Match(some => some, "none");
+        
+        Assert.Equal("none", twoThreeValue);
 
-        // Set None to remove section:
+        // Set None to remove the section:
 
         ini["section_three"] = None;
 
         Option<Section> three = ini["section_three"];
 
-        bool three_is_none = three.IsNone; // true
+        bool threeIsNone = three.IsNone;
+        
+        Assert.True(threeIsNone);
 
-        // Write configuration to a file:
+        // Write configuration to the file:
 
         ini.WriteTo(new FileInfo(_tempFile));
-
-        // Assert
 
         var finalContent = File.ReadAllText(_tempFile);
 

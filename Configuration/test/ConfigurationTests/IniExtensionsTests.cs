@@ -77,6 +77,8 @@ public partial class IniTests : IDisposable
         Assert.Equal("foo", ini.GetNested("foo.bar.baz", "foo").Pure().Value);
         Assert.Equal("bar", ini.GetNested("foo.bar.baz", "bar").Pure().Value);
         Assert.Equal("zzz", ini.GetNested("foo.bar.baz", "xxx").Pure().Value);
+
+        Assert.True(ini.GetNested("foo.bar.baz", "aaa").IsNone);
     }
 
     [Fact]

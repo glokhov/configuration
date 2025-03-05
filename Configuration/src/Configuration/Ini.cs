@@ -22,7 +22,7 @@ public sealed partial class Ini(Config config)
 
     public Option<string> this[string section, string key]
     {
-        get => Config[section].Match(sec => sec[key], None);
+        get => Config[section].Bind(sec => sec[key]);
         set => Config[section].Match(sec => sec[key] = value, () => Config[section] = Some(new Section(Comparer) { [key] = value }));
     }
 

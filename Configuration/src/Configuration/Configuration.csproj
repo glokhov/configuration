@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <Authors>Gennadiy Lokhov</Authors>
         <Copyright>Copyright © Gennadiy Lokhov</Copyright>
-        <Description>Simple INI parser and printer</Description>
+        <Description>Simple INI parser and writer</Description>
         <PackageId>Configuration.Ini</PackageId>
         <PackageTags>configuration;ini</PackageTags>
         <PackageProjectUrl>https://github.com/glokhov/configuration/</PackageProjectUrl>

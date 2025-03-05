@@ -98,19 +98,19 @@ public sealed class ReadMeTests : IDisposable
 
         Option<string> oneOneChanged = ini["section_one", "KeyOne"];
 
-        string oneOneValueChanged = oneOneChanged.Match(some => some, "none");
+        string oneOneChangedValue = oneOneChanged.Match(some => some, "none");
 
-        Assert.Equal("SectionOne_ValueOne_Changed", oneOneValueChanged);
+        Assert.Equal("SectionOne_ValueOne_Changed", oneOneChangedValue);
 
         // Set Some(value) to add new value:
 
         ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
 
-        Option<string> oneThree = ini["section_one", "KeyThree"];
+        Option<string> oneThreeAdded = ini["section_one", "KeyThree"];
 
-        string oneThreeValue = oneThree.Match(some => some, "none");
+        string oneThreeAddedValue = oneThreeAdded.Match(some => some, "none");
 
-        Assert.Equal("SectionOne_ValueThree_Added", oneThreeValue);
+        Assert.Equal("SectionOne_ValueThree_Added", oneThreeAddedValue);
 
         // Set None to remove the value:
 

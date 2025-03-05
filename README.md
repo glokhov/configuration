@@ -38,6 +38,7 @@ KeyTwo = SectionThree_ValueTwo
 Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` that will be used to determine equality of keys in the configuration:
 ```csharp
 Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"));
+Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"), StringComparer.OrdinalIgnoreCase);
 ```
 Use ```Match()``` function to extract the configuration:
 ```csharp
@@ -88,19 +89,19 @@ ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Changed");
 
 Option<string> oneOneChanged = ini["section_one", "KeyOne"];
 
-string oneOneValueChanged = oneOneChanged.Match(some => some, "none");
+string oneOneChangedValue = oneOneChanged.Match(some => some, "none");
 
-Assert.Equal("SectionOne_ValueOne_Changed", oneOneValueChanged);
+Assert.Equal("SectionOne_ValueOne_Changed", oneOneChangedValue);
 ```
 Set ```Some(value)``` to add new value:
 ```csharp
 ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
 
-Option<string> oneThree = ini["section_one", "KeyThree"];
+Option<string> oneThreeAdded = ini["section_one", "KeyThree"];
 
-string oneThreeValue = oneThree.Match(some => some, "none");
+string oneThreeAddedValue = oneThreeAdded.Match(some => some, "none");
 
-Assert.Equal("SectionOne_ValueThree_Added", oneThreeValue);
+Assert.Equal("SectionOne_ValueThree_Added", oneThreeAddedValue);
 ```
 Set ```None``` to remove the value:
 ```csharp
@@ -125,6 +126,19 @@ Assert.True(threeIsNone);
 Write configuration to the file:
 ```csharp
 ini.WriteTo(new FileInfo("Configuration.ini"));
+```
+Final Configuration.ini content:
+```ini
+[section_one]
+
+KeyOne   = SectionOne_ValueOne_Changed
+KeyTwo   = SectionOne_ValueTwo
+KeyThree = SectionOne_ValueThree_Added
+
+[section_two]
+
+KeyOne = SectionTwo_ValueOne
+KeyTwo = SectionTwo_ValueTwo
 ```
 ### Sample
 See [GettingStarted](https://github.com/glokhov/configuration/blob/main/Configuration/test/ConfigurationTests/ReadMeTests.cs) test.

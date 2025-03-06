@@ -39,7 +39,17 @@ public abstract class KeyValueDictionary<TKey, TValue>(Dictionary<TKey, TValue> 
         Dictionary.Clear();
     }
 
-    public bool Contains(TKey key)
+    public bool Contains(KeyValue<TKey, TValue> keyValue)
+    {
+        return Dictionary.TryGetValue(keyValue.Key, out var value) && value.Equals(keyValue.Value);
+    }
+
+    public Option<TValue> Add(KeyValue<TKey, TValue> keyValue)
+    {
+        return Add(keyValue.Key, keyValue.Value);
+    }
+
+    public bool ContainsKey(TKey key)
     {
         return Dictionary.ContainsKey(key);
     }

@@ -1,8 +1,10 @@
+using System.Collections;
+
 namespace Configuration;
 
-public sealed partial class Ini(Config config)
+public sealed partial class Ini(Config config) : IKeyValueCollection<string, Section>
 {
-    public Ini() : this(new Config())
+    public Ini() : this([])
     {
     }
 
@@ -24,6 +26,33 @@ public sealed partial class Ini(Config config)
     {
         get => Config[section].Bind(sec => sec[key]);
         set => Config[section].Match(sec => sec[key] = value, () => Config[section] = Some(new Section(Comparer) { [key] = value }));
+    }
+
+    public int Count => Config.Count;
+
+    public void Clear()
+    {
+        Config.Clear();
+    }
+
+    public bool Contains(KeyValue<string, Section> keyValue)
+    {
+        return Config.Contains(keyValue);
+    }
+
+    public Option<Section> Add(KeyValue<string, Section> keyValue)
+    {
+        return Config.Add(keyValue);
+    }
+
+    public IEnumerator<KeyValue<string, Section>> GetEnumerator()
+    {
+        return Config.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 
     public override string ToString()

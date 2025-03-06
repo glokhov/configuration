@@ -1,6 +1,6 @@
 namespace Configuration;
 
-public interface IKeyValueDictionary<TKey, TValue> : IEnumerable<KeyValue<TKey, TValue>>
+public interface IKeyValueDictionary<TKey, TValue> : IKeyValueCollection<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
@@ -12,11 +12,7 @@ public interface IKeyValueDictionary<TKey, TValue> : IEnumerable<KeyValue<TKey, 
 
     IEqualityComparer<TKey> Comparer { get; }
 
-    int Count { get; }
-
-    void Clear();
-
-    bool Contains(TKey key);
+    bool ContainsKey(TKey key);
 
     Option<TValue> Add(TKey key, TValue value);
 

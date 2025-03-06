@@ -5,6 +5,17 @@ namespace ConfigurationTests;
 public sealed class KeyValueDictionaryTests
 {
     [Fact]
+    public void Collection_Expression_Empty()
+    {
+        KeyValueTestDictionary dictionary = [];
+
+        Assert.Empty(dictionary);
+        Assert.Empty(dictionary.Keys);
+        Assert.Empty(dictionary.Values);
+        Assert.Equal(0, dictionary.Count);
+    }
+
+    [Fact]
     public void Default_Ctor_Creates_Empty_Dictionary()
     {
         var dictionary = new KeyValueTestDictionary();
@@ -16,11 +27,36 @@ public sealed class KeyValueDictionaryTests
     }
 
     [Fact]
+    public void Collection_Expression_Add()
+    {
+        KeyValueTestDictionary dictionary = [new KeyValue<string, string>("key", "value")];
+
+        Assert.True(dictionary.ContainsKey("key"));
+        Assert.True(dictionary.Keys.Contains("key"));
+        Assert.True(dictionary.Values.Contains("value"));
+        Assert.Equal(1, dictionary.Count);
+    }
+
+    [Fact]
+    public void KeyValueCollection_Add_Contains_Clear_Count()
+    {
+        var keyValue = new KeyValue<string, string>("key", "value");
+
+        KeyValueTestDictionary dictionary = [keyValue];
+
+        Assert.True(dictionary.Contains(keyValue));
+
+        dictionary.Clear();
+
+        Assert.Equal(0, dictionary.Count);
+    }
+
+    [Fact]
     public void Object_Initializer_Calls_Add()
     {
         var dictionary = new KeyValueTestDictionary { { "key", "value" } };
 
-        Assert.True(dictionary.Contains("key"));
+        Assert.True(dictionary.ContainsKey("key"));
         Assert.True(dictionary.Keys.Contains("key"));
         Assert.True(dictionary.Values.Contains("value"));
         Assert.Equal(1, dictionary.Count);
@@ -31,7 +67,7 @@ public sealed class KeyValueDictionaryTests
     {
         var dictionary = new KeyValueTestDictionary { ["key"] = Some("value") };
 
-        Assert.True(dictionary.Contains("key"));
+        Assert.True(dictionary.ContainsKey("key"));
         Assert.True(dictionary.Keys.Contains("key"));
         Assert.True(dictionary.Values.Contains("value"));
         Assert.Equal(1, dictionary.Count);

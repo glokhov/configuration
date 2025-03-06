@@ -4,7 +4,7 @@ public partial class Ini
 {
     public static Result<Ini, string> Parse(string input)
     {
-        return Parse(input, new Ini());
+        return Parse(input, []);
     }
 
     public static Result<Ini, string> Parse(string input, IEqualityComparer<string> comparer)

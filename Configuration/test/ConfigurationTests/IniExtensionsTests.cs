@@ -14,7 +14,7 @@ public partial class IniTests : IDisposable
     {
         var temp = CreateTempFile();
 
-        var result = Configuration.Ini.Parse(ABD).Pure().Value.WriteTo(temp);
+        var result = Configuration.Ini.Parse(ABD).AsPure().Value.WriteTo(temp);
 
         using var streamReader = new StreamReader(temp.OpenRead());
         var abd = streamReader.ReadToEnd();
@@ -28,7 +28,7 @@ public partial class IniTests : IDisposable
     {
         var temp = Path.GetTempPath();
 
-        var error = new Ini().WriteTo(new FileInfo(temp)).Fail().Error;
+        var error = new Ini().WriteTo(new FileInfo(temp)).AsFail().Error;
 
         Assert.Contains(temp, error);
     }
@@ -38,7 +38,7 @@ public partial class IniTests : IDisposable
     {
         using var stringWriter = new StringWriter();
 
-        var result = Configuration.Ini.Parse(ABD).Pure().Value.WriteTo(stringWriter);
+        var result = Configuration.Ini.Parse(ABD).AsPure().Value.WriteTo(stringWriter);
 
         Assert.True(result.IsOk);
         Assert.Equal(ABD, stringWriter.ToString());
@@ -50,7 +50,7 @@ public partial class IniTests : IDisposable
         var stringWriter = new StringWriter();
         stringWriter.Close();
 
-        var error = new Ini().WriteTo(stringWriter).Fail().Error;
+        var error = new Ini().WriteTo(stringWriter).AsFail().Error;
 
         Assert.Contains("Cannot write to a closed TextWriter.", error);
     }
@@ -67,16 +67,16 @@ public partial class IniTests : IDisposable
             ["foo.bar.baz", "xxx"] = Some("zzz")
         };
 
-        Assert.Equal("foo", ini.GetNested("foo", "foo").Pure().Value);
-        Assert.Equal("xxx", ini.GetNested("foo", "xxx").Pure().Value);
+        Assert.Equal("foo", ini.GetNested("foo", "foo").AsPure().Value);
+        Assert.Equal("xxx", ini.GetNested("foo", "xxx").AsPure().Value);
 
-        Assert.Equal("foo", ini.GetNested("foo.bar", "foo").Pure().Value);
-        Assert.Equal("bar", ini.GetNested("foo.bar", "bar").Pure().Value);
-        Assert.Equal("yyy", ini.GetNested("foo.bar", "xxx").Pure().Value);
+        Assert.Equal("foo", ini.GetNested("foo.bar", "foo").AsPure().Value);
+        Assert.Equal("bar", ini.GetNested("foo.bar", "bar").AsPure().Value);
+        Assert.Equal("yyy", ini.GetNested("foo.bar", "xxx").AsPure().Value);
 
-        Assert.Equal("foo", ini.GetNested("foo.bar.baz", "foo").Pure().Value);
-        Assert.Equal("bar", ini.GetNested("foo.bar.baz", "bar").Pure().Value);
-        Assert.Equal("zzz", ini.GetNested("foo.bar.baz", "xxx").Pure().Value);
+        Assert.Equal("foo", ini.GetNested("foo.bar.baz", "foo").AsPure().Value);
+        Assert.Equal("bar", ini.GetNested("foo.bar.baz", "bar").AsPure().Value);
+        Assert.Equal("zzz", ini.GetNested("foo.bar.baz", "xxx").AsPure().Value);
 
         Assert.True(ini.GetNested("foo.bar.baz", "aaa").IsNone);
     }
@@ -93,20 +93,38 @@ public partial class IniTests : IDisposable
             ["foo.bar.baz", "xxx"] = Some("zzz")
         };
 
-        var foo = ini.GetNested("foo").Pure().Value;
-        var bar = ini.GetNested("foo.bar").Pure().Value;
-        var baz = ini.GetNested("foo.bar.baz").Pure().Value;
+        var foo = ini.GetNested("foo").AsPure().Value;
+        var bar = ini.GetNested("foo.bar").AsPure().Value;
+        var baz = ini.GetNested("foo.bar.baz").AsPure().Value;
 
-        Assert.Equal("foo", foo["foo"].Pure().Value);
-        Assert.Equal("xxx", foo["xxx"].Pure().Value);
+        Assert.Equal("foo", foo["foo"].AsPure().Value);
+        Assert.Equal("xxx", foo["xxx"].AsPure().Value);
 
-        Assert.Equal("foo", bar["foo"].Pure().Value);
-        Assert.Equal("bar", bar["bar"].Pure().Value);
-        Assert.Equal("yyy", bar["xxx"].Pure().Value);
+        Assert.Equal("foo", bar["foo"].AsPure().Value);
+        Assert.Equal("bar", bar["bar"].AsPure().Value);
+        Assert.Equal("yyy", bar["xxx"].AsPure().Value);
 
-        Assert.Equal("foo", baz["foo"].Pure().Value);
-        Assert.Equal("bar", baz["bar"].Pure().Value);
-        Assert.Equal("zzz", baz["xxx"].Pure().Value);
+        Assert.Equal("foo", baz["foo"].AsPure().Value);
+        Assert.Equal("bar", baz["bar"].AsPure().Value);
+        Assert.Equal("zzz", baz["xxx"].AsPure().Value);
+    }
+
+    [Fact]
+    public void Test()
+    {
+        var ini = new Ini
+        {
+            ["foo.bar.baz", "fuz"] = Some("fuz")
+        };
+
+        var foo = ini.GetNested("foo").AsPure().Value;
+        var bar = ini.GetNested("foo.bar").AsPure().Value;
+        var baz = ini.GetNested("foo.bar.baz").AsPure().Value;
+        var fuz = baz["fuz"].AsPure().Value;
+
+        Assert.Empty(foo);
+        Assert.Empty(bar);
+        Assert.Equal("fuz", fuz);
     }
 
     public void Dispose()

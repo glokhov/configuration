@@ -32,7 +32,7 @@ public static class IniExtensions
 
     public static Option<Section> GetNested(this Ini ini, string section)
     {
-        return EnumerateForward(section).Select(segment => ini[segment]).Aggregate(SomeSection(ini), (cur, next) => cur.Bind(sec => next.Map(sec.Merge)));
+        return EnumerateForward(section).Select(segment => ini[segment]).Aggregate(SomeSection(ini), (cur, next) => cur.Bind(sec => next.IsSome ? next.Map(sec.Merge) : Some(sec)));
     }
 
     public static Option<string> GetNested(this Ini ini, string section, string key)

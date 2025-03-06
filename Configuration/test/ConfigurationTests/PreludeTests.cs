@@ -29,13 +29,13 @@ public sealed class PreludeTests : IDisposable
     [Fact]
     public void Ini_Returns_Error_If_File_Does_Not_Exist()
     {
-        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path")).Fail().Error);
+        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path")).AsFail().Error);
     }
 
     [Fact]
     public void Ini_Comparer_Returns_Error_If_File_Does_Not_Exist()
     {
-        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path"), StringComparer.Ordinal).Fail().Error);
+        Assert.Equal("File does not exist: path.", Ini(new FileInfo("path"), StringComparer.Ordinal).AsFail().Error);
     }
 
     [Fact]
@@ -43,9 +43,9 @@ public sealed class PreludeTests : IDisposable
     {
         var temp = CreateTempFile(Input);
 
-        var ini = Ini(temp).Pure().Value;
-        var foo = ini["default", "A"].Pure().Value;
-        var bar = ini["default", "B"].Pure().Value;
+        var ini = Ini(temp).AsPure().Value;
+        var foo = ini["default", "A"].AsPure().Value;
+        var bar = ini["default", "B"].AsPure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -56,9 +56,9 @@ public sealed class PreludeTests : IDisposable
     {
         var temp = CreateTempFile(Input);
 
-        var ini = Ini(temp, StringComparer.OrdinalIgnoreCase).Pure().Value;
-        var foo = ini["DEFAULT", "a"].Pure().Value;
-        var bar = ini["DEFAULT", "b"].Pure().Value;
+        var ini = Ini(temp, StringComparer.OrdinalIgnoreCase).AsPure().Value;
+        var foo = ini["DEFAULT", "a"].AsPure().Value;
+        var bar = ini["DEFAULT", "b"].AsPure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -70,7 +70,7 @@ public sealed class PreludeTests : IDisposable
         var temp = CreateTempFile();
         var file = temp.Open(FileMode.Open);
 
-        var error = Ini(temp).Fail().Error;
+        var error = Ini(temp).AsFail().Error;
 
         file.Close();
 
@@ -83,7 +83,7 @@ public sealed class PreludeTests : IDisposable
         var temp = CreateTempFile();
         var file = temp.Open(FileMode.Open);
 
-        var error = Ini(temp, StringComparer.Ordinal).Fail().Error;
+        var error = Ini(temp, StringComparer.Ordinal).AsFail().Error;
 
         file.Close();
 
@@ -93,10 +93,10 @@ public sealed class PreludeTests : IDisposable
     [Fact]
     public void Ini_TextReader_Calls_Parse_Path()
     {
-        var ini = Ini(new StringReader(Input)).Pure().Value;
+        var ini = Ini(new StringReader(Input)).AsPure().Value;
 
-        var foo = ini["default", "A"].Pure().Value;
-        var bar = ini["default", "B"].Pure().Value;
+        var foo = ini["default", "A"].AsPure().Value;
+        var bar = ini["default", "B"].AsPure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -105,10 +105,10 @@ public sealed class PreludeTests : IDisposable
     [Fact]
     public void Ini_TextReader_Comparer_Calls_Parse_Path_Comparer()
     {
-        var ini = Ini(new StringReader(Input), StringComparer.OrdinalIgnoreCase).Pure().Value;
+        var ini = Ini(new StringReader(Input), StringComparer.OrdinalIgnoreCase).AsPure().Value;
 
-        var foo = ini["DEFAULT", "a"].Pure().Value;
-        var bar = ini["DEFAULT", "b"].Pure().Value;
+        var foo = ini["DEFAULT", "a"].AsPure().Value;
+        var bar = ini["DEFAULT", "b"].AsPure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -120,7 +120,7 @@ public sealed class PreludeTests : IDisposable
         var stringReader = new StringReader(Input);
         stringReader.Close();
 
-        var error = Ini(stringReader).Fail().Error;
+        var error = Ini(stringReader).AsFail().Error;
 
         Assert.Contains("Cannot read from a closed TextReader.", error);
     }
@@ -131,7 +131,7 @@ public sealed class PreludeTests : IDisposable
         var stringReader = new StringReader(Input);
         stringReader.Close();
 
-        var error = Ini(stringReader, StringComparer.Ordinal).Fail().Error;
+        var error = Ini(stringReader, StringComparer.Ordinal).AsFail().Error;
 
         Assert.Contains("Cannot read from a closed TextReader.", error);
     }
@@ -139,10 +139,10 @@ public sealed class PreludeTests : IDisposable
     [Fact]
     public void Ini_Input_Calls_Parse_Path()
     {
-        var ini = Ini(Input).Pure().Value;
+        var ini = Ini(Input).AsPure().Value;
 
-        var foo = ini["default", "A"].Pure().Value;
-        var bar = ini["default", "B"].Pure().Value;
+        var foo = ini["default", "A"].AsPure().Value;
+        var bar = ini["default", "B"].AsPure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);
@@ -151,10 +151,10 @@ public sealed class PreludeTests : IDisposable
     [Fact]
     public void Ini_Input_Comparer_Calls_Parse_Path_Comparer()
     {
-        var ini = Ini(Input, StringComparer.OrdinalIgnoreCase).Pure().Value;
+        var ini = Ini(Input, StringComparer.OrdinalIgnoreCase).AsPure().Value;
 
-        var foo = ini["DEFAULT", "a"].Pure().Value;
-        var bar = ini["DEFAULT", "b"].Pure().Value;
+        var foo = ini["DEFAULT", "a"].AsPure().Value;
+        var bar = ini["DEFAULT", "b"].AsPure().Value;
 
         Assert.Equal("foo", foo);
         Assert.Equal("bar", bar);

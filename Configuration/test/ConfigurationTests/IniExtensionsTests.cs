@@ -14,7 +14,7 @@ public partial class IniTests : IDisposable
     {
         var temp = CreateTempFile();
 
-        var result = Configuration.Ini.Parse(ABD).AsPure().Value.WriteTo(temp);
+        var result = Configuration.Ini.Parse(ABD).Unwrap().WriteTo(temp);
 
         using var streamReader = new StreamReader(temp.OpenRead());
         var abd = streamReader.ReadToEnd();
@@ -38,7 +38,7 @@ public partial class IniTests : IDisposable
     {
         using var stringWriter = new StringWriter();
 
-        var result = Configuration.Ini.Parse(ABD).AsPure().Value.WriteTo(stringWriter);
+        var result = Configuration.Ini.Parse(ABD).Unwrap().WriteTo(stringWriter);
 
         Assert.True(result.IsOk);
         Assert.Equal(ABD, stringWriter.ToString());
@@ -67,16 +67,16 @@ public partial class IniTests : IDisposable
             ["foo.bar.baz", "xxx"] = Some("zzz")
         };
 
-        Assert.Equal("foo", ini.GetNested("foo", "foo").AsPure().Value);
-        Assert.Equal("xxx", ini.GetNested("foo", "xxx").AsPure().Value);
+        Assert.Equal("foo", ini.GetNested("foo", "foo").Unwrap());
+        Assert.Equal("xxx", ini.GetNested("foo", "xxx").Unwrap());
 
-        Assert.Equal("foo", ini.GetNested("foo.bar", "foo").AsPure().Value);
-        Assert.Equal("bar", ini.GetNested("foo.bar", "bar").AsPure().Value);
-        Assert.Equal("yyy", ini.GetNested("foo.bar", "xxx").AsPure().Value);
+        Assert.Equal("foo", ini.GetNested("foo.bar", "foo").Unwrap());
+        Assert.Equal("bar", ini.GetNested("foo.bar", "bar").Unwrap());
+        Assert.Equal("yyy", ini.GetNested("foo.bar", "xxx").Unwrap());
 
-        Assert.Equal("foo", ini.GetNested("foo.bar.baz", "foo").AsPure().Value);
-        Assert.Equal("bar", ini.GetNested("foo.bar.baz", "bar").AsPure().Value);
-        Assert.Equal("zzz", ini.GetNested("foo.bar.baz", "xxx").AsPure().Value);
+        Assert.Equal("foo", ini.GetNested("foo.bar.baz", "foo").Unwrap());
+        Assert.Equal("bar", ini.GetNested("foo.bar.baz", "bar").Unwrap());
+        Assert.Equal("zzz", ini.GetNested("foo.bar.baz", "xxx").Unwrap());
 
         Assert.True(ini.GetNested("foo.bar.baz", "aaa").IsNone);
     }
@@ -93,20 +93,20 @@ public partial class IniTests : IDisposable
             ["foo.bar.baz", "xxx"] = Some("zzz")
         };
 
-        var foo = ini.GetNested("foo").AsPure().Value;
-        var bar = ini.GetNested("foo.bar").AsPure().Value;
-        var baz = ini.GetNested("foo.bar.baz").AsPure().Value;
+        var foo = ini.GetNested("foo").Unwrap();
+        var bar = ini.GetNested("foo.bar").Unwrap();
+        var baz = ini.GetNested("foo.bar.baz").Unwrap();
 
-        Assert.Equal("foo", foo["foo"].AsPure().Value);
-        Assert.Equal("xxx", foo["xxx"].AsPure().Value);
+        Assert.Equal("foo", foo["foo"].Unwrap());
+        Assert.Equal("xxx", foo["xxx"].Unwrap());
 
-        Assert.Equal("foo", bar["foo"].AsPure().Value);
-        Assert.Equal("bar", bar["bar"].AsPure().Value);
-        Assert.Equal("yyy", bar["xxx"].AsPure().Value);
+        Assert.Equal("foo", bar["foo"].Unwrap());
+        Assert.Equal("bar", bar["bar"].Unwrap());
+        Assert.Equal("yyy", bar["xxx"].Unwrap());
 
-        Assert.Equal("foo", baz["foo"].AsPure().Value);
-        Assert.Equal("bar", baz["bar"].AsPure().Value);
-        Assert.Equal("zzz", baz["xxx"].AsPure().Value);
+        Assert.Equal("foo", baz["foo"].Unwrap());
+        Assert.Equal("bar", baz["bar"].Unwrap());
+        Assert.Equal("zzz", baz["xxx"].Unwrap());
     }
 
     [Fact]
@@ -117,10 +117,10 @@ public partial class IniTests : IDisposable
             ["foo.bar.baz", "fuz"] = Some("fuz")
         };
 
-        var foo = ini.GetNested("foo").AsPure().Value;
-        var bar = ini.GetNested("foo.bar").AsPure().Value;
-        var baz = ini.GetNested("foo.bar.baz").AsPure().Value;
-        var fuz = baz["fuz"].AsPure().Value;
+        var foo = ini.GetNested("foo").Unwrap();
+        var bar = ini.GetNested("foo.bar").Unwrap();
+        var baz = ini.GetNested("foo.bar.baz").Unwrap();
+        var fuz = baz["fuz"].Unwrap();
 
         Assert.Empty(foo);
         Assert.Empty(bar);

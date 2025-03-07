@@ -42,13 +42,13 @@ public partial class IniTests
     [Fact]
     public void Parse_Empty_String_Returns_Empty_Config()
     {
-        Assert.Equal("", Configuration.Ini.Parse("").AsPure().Value.ToString());
+        Assert.Equal("", Configuration.Ini.Parse("").Unwrap().ToString());
     }
 
     [Fact]
     public void Parse_Calls_Default_Configuration_Ctor()
     {
-        var configuration = Configuration.Ini.Parse(C).AsPure().Value;
+        var configuration = Configuration.Ini.Parse(C).Unwrap();
 
         Assert.True(configuration["FOO"].IsNone);
         Assert.True(configuration["foo", "c"].IsNone);
@@ -57,7 +57,7 @@ public partial class IniTests
     [Fact]
     public void Parse_Calls_Comparer_Configuration_Ctor()
     {
-        var ini = Configuration.Ini.Parse(C, StringComparer.OrdinalIgnoreCase).AsPure().Value;
+        var ini = Configuration.Ini.Parse(C, StringComparer.OrdinalIgnoreCase).Unwrap();
 
         Assert.True(ini["FOO"].IsSome);
         Assert.True(ini["foo", "c"].IsSome);
@@ -66,18 +66,18 @@ public partial class IniTests
     [Fact]
     public void Parse_Returns_Error_If_Cannot_Parse_Line()
     {
-        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Ini.Parse(A + X).AsFail().Error);
+        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Ini.Parse(A + X).ExpectError());
     }
 
     [Fact]
     public void Parse_No_Eol_At_End()
     {
-        Assert.Equal($"{ABD}", Configuration.Ini.Parse(A + B + D).AsPure().Value.ToString());
+        Assert.Equal($"{ABD}", Configuration.Ini.Parse(A + B + D).Unwrap().ToString());
     }
 
     [Fact]
     public void Parse_No_Section_At_Begin()
     {
-        Assert.Equal($"{BC}", Configuration.Ini.Parse(B + C).AsPure().Value.ToString());
+        Assert.Equal($"{BC}", Configuration.Ini.Parse(B + C).Unwrap().ToString());
     }
 }

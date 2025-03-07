@@ -2,11 +2,22 @@ namespace Configuration;
 
 public partial class Ini
 {
+    /// <summary>
+    /// Parses the text representing of an ini configuration into an instance of the type <c>Ini</c>.
+    /// </summary>
+    /// <param name="input">The text representation of an ini configuration.</param>
+    /// <returns>The <c>Ini</c> representation of an ini configuration.</returns>
     public static Result<Ini, string> Parse(string input)
     {
         return Parse(input, []);
     }
 
+    /// <summary>
+    /// Parses the text representing of an ini configuration into an instance of the type <c>Ini</c>.
+    /// </summary>
+    /// <param name="input">The text representation of an ini configuration.</param>
+    /// <param name="comparer">The IEqualityComparer&lt;T&gt; implementation to use when comparing keys.</param>
+    /// <returns>The <c>Ini</c> representation of an ini configuration.</returns>
     public static Result<Ini, string> Parse(string input, IEqualityComparer<string> comparer)
     {
         return Parse(input, new Ini(comparer));
@@ -16,7 +27,9 @@ public partial class Ini
     {
         var section = "default";
 
-        foreach (var (line, number) in input.Split('\n').Select(RemoveComment).Select(Trim).Select(WithNumber).Where(IsNotEmpty))
+        var lines = input.Split('\n').Select(RemoveComment).Select(Trim).Select(WithNumber).Where(IsNotEmpty);
+
+        foreach (var (line, number) in lines)
         {
             if (ParseSectionName(line).Bind(CreateSection).IsSome)
             {

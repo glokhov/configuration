@@ -2,16 +2,29 @@ using System.Collections;
 
 namespace Configuration;
 
+/// <summary>
+/// Represents an ini file configuration.
+/// </summary>
 public sealed partial class Ini(Config config) : IKeyValueCollection<string, Section>
 {
+    /// <summary>
+    /// Initializes a new instance of the <c>Ini</c> class.
+    /// </summary>
     public Ini() : this([])
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <c>Ini</c> class.
+    /// </summary>
+    /// <param name="comparer">The IEqualityComparer&lt;T&gt; implementation to use when comparing keys.</param>
     public Ini(IEqualityComparer<string> comparer) : this(new Config(comparer))
     {
     }
 
+    /// <summary>
+    /// The internal <c>Config</c> dictionary.
+    /// </summary>
     public Config Config { get; } = config;
 
     /// <summary>
@@ -23,13 +36,12 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// Gets or sets the section associated with the specified section name.
     /// </summary>
     /// <param name="section">The section name of the section to get or set.</param>
-    /// <value>The section associated with the specified section name.
-    /// If the specified section is not found,
-    /// a get operation returns <c>None</c>, and
-    /// a set operation creates a new section with the specified section name.
-    /// If the section is <c>None</c>,
-    /// a set operation removes the section with the specified section name from the configuration.
-    /// </value>
+    /// <value> The section associated with the specified section name.</value>
+    /// <remarks>
+    /// If the specified section is not found, a get operation returns <c>None</c>, and a set operation creates a new
+    /// section with the specified section name. If the section is <c>None</c>, a set operation removes the section
+    /// with the specified section name from the configuration.
+    /// </remarks>
     public Option<Section> this[string section]
     {
         get => Config[section];
@@ -41,26 +53,28 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// </summary>
     /// <param name="section">The section name of the section to get or set.</param>
     /// <param name="key">The key of the value to get or set.</param>
-    /// <value>The value associated with the specified section name and key.
-    /// If the specified value is not found,
-    /// a get operation returns <c>None</c>, and
-    /// a set operation creates a new value with the specified section name and key.
-    /// If the value is <c>None</c>,
-    /// a set operation removes the value with the specified section name and key from the configuration.
-    /// </value>
+    /// <value> The value associated with the specified section name and key.</value>
+    /// <remarks>
+    /// If the specified value is not found, a get operation returns <c>None</c>, and a set operation creates a new
+    /// value with the specified section name and key. If the value is <c>None</c>, a set operation removes the value
+    /// with the specified section name and key from the configuration.
+    /// </remarks>
     public Option<string> this[string section, string key]
     {
         get => Config[section].Bind(sec => sec[key]);
-        set => Config[section].Match(sec => sec[key] = value, () => Config[section] = Some(new Section(Comparer) { [key] = value }));
+        set => Config[section].Match(
+            sec => sec[key] = value,
+            () => Config[section] = Some(new Section(Comparer) { [key] = value })
+        );
     }
 
     /// <summary>
-    /// Gets the number of key/value pairs contained in the configuration.
+    /// Gets the number of sections contained in the configuration.
     /// </summary>
     public int Count => Config.Count;
 
     /// <summary>
-    /// Removes all keys and values from the configuration.
+    /// Removes all sections from the configuration.
     /// </summary>
     public void Clear()
     {
@@ -101,6 +115,10 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
         return GetEnumerator();
     }
 
+    /// <summary>
+    /// Returns the string representation of this instance.
+    /// </summary>
+    /// <returns>The string representation of this instance.</returns>
     public override string ToString()
     {
         return Config.ToString();

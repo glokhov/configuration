@@ -16,7 +16,10 @@
         <RepositoryUrl>https://github.com/glokhov/configuration.git</RepositoryUrl>
         <Version>0.1.7</Version>
     </PropertyGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48'">
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48' ">
         <PackageReference Include="IndexRange" Version="1.0.3" />
         <PackageReference Include="IsExternalInit" Version="1.0.3" />
     </ItemGroup>

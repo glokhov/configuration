@@ -1,7 +1,16 @@
 namespace Configuration;
 
+/// <summary>
+/// Extensions for the type <c>Ini</c>.
+/// </summary>
 public static class IniExtensions
 {
+    /// <summary>
+    /// Writes the text representing of an ini configuration to the file.
+    /// </summary>
+    /// <param name="ini">The <c>Ini</c> representation of an ini configuration.</param>
+    /// <param name="fileInfo">>The <c>FileInfo</c> instance.</param>
+    /// <returns>The <c>Result</c> of a write operation.</returns>
     public static Result<Unit, string> WriteTo(this Ini ini, FileInfo fileInfo)
     {
         try
@@ -15,6 +24,12 @@ public static class IniExtensions
         }
     }
 
+    /// <summary>
+    /// Writes the text representing of an ini configuration to the text stream.
+    /// </summary>
+    /// <param name="ini">The <c>Ini</c> representation of an ini configuration.</param>
+    /// <param name="textWriter">>The <c>TextWriter</c> instance.</param>
+    /// <returns>The <c>Result</c> of a write operation.</returns>
     public static Result<Unit, string> WriteTo(this Ini ini, TextWriter textWriter)
     {
         try
@@ -30,19 +45,43 @@ public static class IniExtensions
         return Ok(Unit.Default);
     }
 
+    /// <summary>
+    /// Gets the section associated with the specified section name.
+    /// </summary>
+    /// <remarks>
+    /// Creates a new instance of Section class by merging nested sections of an ini configuration.
+    /// </remarks>
+    /// <param name="ini">The <c>Ini</c> representation of an ini configuration.</param>
+    /// <param name="section">The section name of the section to get.</param>
+    /// <returns><c>Some(Section)</c> if the specified section is found; otherwise, <c>None</c>.</returns>
     public static Option<Section> GetNested(this Ini ini, string section)
     {
-        return EnumerateForward(section).Select(segment => ini[segment]).Aggregate(SomeSection(ini), (current, next) => current.Bind(cur => next.IsSome ? next.Map(cur.Merge) : current));
+        return EnumerateForward(section).Select(segment => ini[segment]).Aggregate(SomeSection(ini), MergeSections);
     }
 
+    /// <summary>
+    /// Gets the value associated with the specified section name and key.
+    /// </summary>
+    /// <remarks>
+    /// Gets the value by looking in all nested sections of an ini configuration.
+    /// </remarks>
+    /// <param name="ini">The <c>Ini</c> representation of an ini configuration.</param>
+    /// <param name="section">The section name of the section to get.</param>
+    /// <param name="key">The key of the value to get.</param>
+    /// <returns><c>Some(string)</c> if the specified value is found; otherwise, <c>None</c>.</returns>
     public static Option<string> GetNested(this Ini ini, string section, string key)
     {
-        return EnumerateBackward(section).Select(segment => ini[segment].Bind(sec => sec[key])).FirstOrDefault(opt => opt.IsSome);
+        return EnumerateBackward(section).Select(seg => ini[seg].Bind(sec => sec[key])).FirstOrDefault(opt => opt.IsSome);
     }
 
     private static Option<Section> SomeSection(Ini ini)
     {
         return Some(new Section(ini.Comparer));
+    }
+
+    private static Option<Section> MergeSections(Option<Section> current, Option<Section> next)
+    {
+        return current.Bind(cur => next.IsSome ? next.Map(cur.Merge) : current);
     }
 
     private static IEnumerable<string> EnumerateForward(string section)

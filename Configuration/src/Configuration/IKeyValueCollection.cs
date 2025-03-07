@@ -1,11 +1,16 @@
 namespace Configuration;
 
+/// <summary>
+/// Defines Count, Clear, Contains and Add methods for a collection of keys and values.
+/// </summary>
+/// <typeparam name="TKey">The type of the keys in the collection.</typeparam>
+/// <typeparam name="TValue">The type of the values in the collection.</typeparam>
 public interface IKeyValueCollection<TKey, TValue> : IEnumerable<KeyValue<TKey, TValue>>
     where TKey : notnull
     where TValue : notnull
 {
     /// <summary>
-    /// Gets the number items contained in the collection.
+    /// Gets the number of items contained in the collection.
     /// </summary>
     int Count { get; }
 

@@ -16,7 +16,7 @@ public sealed class ConfigTests
     public void Comparer_Ctor_Config_Ctor()
     {
         var config = new Config(StringComparer.OrdinalIgnoreCase) { ["key"] = Some(new Section()) };
-        var copy = new Config(config);
+        var copy = new Config(config, config.Comparer);
 
         Assert.True(copy["key"].IsSome);
         Assert.True(copy["KEY"].IsSome);

@@ -16,9 +16,13 @@ public sealed class Config : KeyValueDictionary<string, Section>
     {
     }
 
+    public Config(Config config, IEqualityComparer<string> comparer) : base(config, comparer)
+    {
+    }
+
     public Config Merge(Config config)
     {
-        var merge = new Config(this);
+        var merge = new Config(this, Comparer);
 
         foreach (var (key, section) in config)
         {

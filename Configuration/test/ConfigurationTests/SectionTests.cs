@@ -16,7 +16,7 @@ public sealed class SectionTests
     public void Comparer_Ctor_Section_Ctor()
     {
         var section = new Section(StringComparer.OrdinalIgnoreCase) { ["key"] = Some("value") };
-        var copy = new Section(section);
+        var copy = new Section(section, section.Comparer);
 
         Assert.True(copy["key"].IsSome);
         Assert.True(copy["KEY"].IsSome);
@@ -46,7 +46,7 @@ public sealed class SectionTests
             ["ccc"] = Some("ccc"),
             ["zzz"] = Some("zzz")
         };
-        
+
         Assert.Equivalent(merged, first.Merge(second));
     }
 

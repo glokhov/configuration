@@ -178,27 +178,9 @@ public sealed class KeyValueDictionaryTests
     }
 
     [Fact]
-    public void KeyValueDictionary_Ctor_Passes_Comparer_To_Dictionary_Ctor()
-    {
-        var dictionary = new KeyValueTestDictionary(new KeyValueTestDictionary { ["key"] = Some("value") });
-
-        Assert.True(dictionary["KEY"].IsNone);
-        Assert.Equal("StringEqualityComparer", dictionary.Comparer.GetType().Name);
-    }
-
-    [Fact]
     public void Comparer_Ctor_Sets_Custom_Comparer()
     {
         var dictionary = new KeyValueTestDictionary(StringComparer.OrdinalIgnoreCase) { ["key"] = Some("value") };
-
-        Assert.True(dictionary["KEY"].IsSome);
-        Assert.Equal("OrdinalIgnoreCaseComparer", dictionary.Comparer.GetType().Name);
-    }
-
-    [Fact]
-    public void KeyValueDictionary_Ctor_Passes_Comparer_To_Dictionary_Ctor_2()
-    {
-        var dictionary = new KeyValueTestDictionary(new KeyValueTestDictionary(StringComparer.OrdinalIgnoreCase) { ["key"] = Some("value") });
 
         Assert.True(dictionary["KEY"].IsSome);
         Assert.Equal("OrdinalIgnoreCaseComparer", dictionary.Comparer.GetType().Name);

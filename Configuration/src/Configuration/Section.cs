@@ -16,9 +16,13 @@ public sealed class Section : KeyValueDictionary<string, string>
     {
     }
 
+    public Section(Section section, IEqualityComparer<string> comparer) : base(section, comparer)
+    {
+    }
+
     public Section Merge(Section section)
     {
-        var merge = new Section(this);
+        var merge = new Section(this, Comparer);
 
         foreach (var (key, value) in section)
         {

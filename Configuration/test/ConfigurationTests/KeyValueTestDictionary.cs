@@ -6,11 +6,15 @@ public sealed class KeyValueTestDictionary : KeyValueDictionary<string, string>
     {
     }
 
-    public KeyValueTestDictionary(StringComparer comparer) : base(comparer)
+    public KeyValueTestDictionary(IEqualityComparer<string> comparer) : base(comparer)
     {
     }
 
     public KeyValueTestDictionary(KeyValueTestDictionary dictionary) : base(dictionary)
+    {
+    }
+
+    public KeyValueTestDictionary(KeyValueTestDictionary dictionary, IEqualityComparer<string> comparer) : base(dictionary, comparer)
     {
     }
 

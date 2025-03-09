@@ -54,7 +54,7 @@ public abstract class KeyValueDictionary<TKey, TValue>(Dictionary<TKey, TValue> 
     }
 
     /// <summary>
-    /// IThe iternal <c>Dictionary&lt;TKey, TValue&gt;</c>.
+    /// The internal <c>Dictionary&lt;TKey, TValue&gt;</c>.
     /// </summary>
     protected Dictionary<TKey, TValue> Dictionary { get; } = dictionary;
 
@@ -85,7 +85,7 @@ public abstract class KeyValueDictionary<TKey, TValue>(Dictionary<TKey, TValue> 
     public ICollection<TValue> Values => Dictionary.Values;
 
     /// <summary>
-    /// Gets the IEqualityComparer&lt;T&gt; that is used to determine equality of keys for the dictionary.
+    /// Gets the IEqualityComparer&lt;T&gt; that is used to determine equality of keys.
     /// </summary>
     public IEqualityComparer<TKey> Comparer => Dictionary.Comparer;
 

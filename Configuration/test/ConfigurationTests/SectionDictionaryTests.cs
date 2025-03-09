@@ -1,12 +1,12 @@
 namespace ConfigurationTests;
 
-public sealed class SectionTests
+public sealed class SectionDictionaryTests
 {
     [Fact]
     public void Default_Ctor_Section_Ctor()
     {
-        var section = new Section { ["key"] = Some("value") };
-        var copy = new Section(section);
+        var section = new SectionDictionary { ["key"] = Some("value") };
+        var copy = new SectionDictionary(section);
 
         Assert.True(copy["key"].IsSome);
         Assert.True(copy["KEY"].IsNone);
@@ -15,8 +15,8 @@ public sealed class SectionTests
     [Fact]
     public void Comparer_Ctor_Section_Ctor()
     {
-        var section = new Section(StringComparer.OrdinalIgnoreCase) { ["key"] = Some("value") };
-        var copy = new Section(section, section.Comparer);
+        var section = new SectionDictionary(StringComparer.OrdinalIgnoreCase) { ["key"] = Some("value") };
+        var copy = new SectionDictionary(section, section.Comparer);
 
         Assert.True(copy["key"].IsSome);
         Assert.True(copy["KEY"].IsSome);
@@ -25,21 +25,21 @@ public sealed class SectionTests
     [Fact]
     public void Merge_Replaces_OldValues_Adds_NewValues()
     {
-        var first = new Section
+        var first = new SectionDictionary
         {
             ["aaa"] = Some("aaa"),
             ["bbb"] = Some("bbb"),
             ["ccc"] = Some("xxx")
         };
 
-        var second = new Section
+        var second = new SectionDictionary
         {
             ["bbb"] = Some("bbb"),
             ["ccc"] = Some("ccc"),
             ["zzz"] = Some("zzz")
         };
 
-        var merged = new Section
+        var merged = new SectionDictionary
         {
             ["aaa"] = Some("aaa"),
             ["bbb"] = Some("bbb"),
@@ -53,7 +53,7 @@ public sealed class SectionTests
     [Fact]
     public void ToString_Creates_Ini_File_Section_With_Padding()
     {
-        var section = new Section
+        var section = new SectionDictionary
         {
             ["A"] = Some("aaa"),
             ["AB"] = Some("abb"),
@@ -70,6 +70,6 @@ public sealed class SectionTests
     [Fact]
     public void If_Section_Empty_ToString_Returns_Empty_String()
     {
-        Assert.Empty(new Section().ToString());
+        Assert.Empty(new SectionDictionary().ToString());
     }
 }

@@ -9,6 +9,7 @@ public sealed partial class IniTests
     {
         var ini = new Ini();
 
+        Assert.Empty(ini);
         Assert.Empty(ini.Config);
         Assert.Equal("StringEqualityComparer", ini.Comparer.GetType().Name);
     }
@@ -18,6 +19,7 @@ public sealed partial class IniTests
     {
         var ini = new Ini(StringComparer.Ordinal);
 
+        Assert.Empty(ini);
         Assert.Empty(ini.Config);
         Assert.Equal("OrdinalCaseSensitiveComparer", ini.Comparer.GetType().Name);
     }
@@ -42,7 +44,7 @@ public sealed partial class IniTests
     public void Collection_Expression_Add_Clear()
     {
         var keyValue = new KeyValue<string, string>("key", "value");
-        var sectionKeyValue = new KeyValue<string, Section>("section", [keyValue]);
+        var sectionKeyValue = new KeyValue<string, SectionDictionary>("section", [keyValue]);
 
         Ini ini = [sectionKeyValue];
 

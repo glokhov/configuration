@@ -55,8 +55,8 @@ public sealed class ReadMeTests : IDisposable
 
         // Use Item[section] property to get a section:
 
-        Option<Section> one = ini["section_one"];
-        Option<Section> four = ini["section_four"];
+        Option<SectionDictionary> one = ini["section_one"];
+        Option<SectionDictionary> four = ini["section_four"];
 
         bool oneIsSome = one.IsSome;
         bool fourIsNone = four.IsNone;
@@ -126,7 +126,7 @@ public sealed class ReadMeTests : IDisposable
 
         ini["section_three"] = None;
 
-        Option<Section> three = ini["section_three"];
+        Option<SectionDictionary> three = ini["section_three"];
 
         bool threeIsNone = three.IsNone;
         

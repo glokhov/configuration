@@ -28,7 +28,7 @@ public partial class IniTests : IDisposable
     {
         var temp = Path.GetTempPath();
 
-        var error = new Ini().WriteTo(new FileInfo(temp)).AsFail().Error;
+        var error = new Ini().WriteTo(new FileInfo(temp)).ExpectError();
 
         Assert.Contains(temp, error);
     }
@@ -50,7 +50,7 @@ public partial class IniTests : IDisposable
         var stringWriter = new StringWriter();
         stringWriter.Close();
 
-        var error = new Ini().WriteTo(stringWriter).AsFail().Error;
+        var error = new Ini().WriteTo(stringWriter).ExpectError();
 
         Assert.Contains("Cannot write to a closed TextWriter.", error);
     }

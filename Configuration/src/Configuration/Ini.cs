@@ -5,7 +5,7 @@ namespace Configuration;
 /// <summary>
 /// Represents an ini file configuration.
 /// </summary>
-public sealed partial class Ini(Config config) : IKeyValueCollection<string, Section>
+public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCollection<string, SectionDictionary>
 {
     /// <summary>
     /// Initializes a new instance of the <c>Ini</c> class.
@@ -17,32 +17,33 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// <summary>
     /// Initializes a new instance of the <c>Ini</c> class.
     /// </summary>
-    /// <param name="comparer">The IEqualityComparer&lt;T&gt; implementation to use when comparing keys.</param>
-    public Ini(IEqualityComparer<string> comparer) : this(new Config(comparer))
+    /// <param name="comparer">
+    /// The IEqualityComparer&lt;T&gt; implementation to use when comparing section names and keys.
+    /// </param>
+    public Ini(IEqualityComparer<string> comparer) : this(new ConfigDictionary(comparer))
     {
     }
 
     /// <summary>
-    /// The internal <c>Config</c> dictionary.
+    /// The internal <c>ConfigDictionary</c> dictionary.
     /// </summary>
-    public Config Config { get; } = config;
+    public ConfigDictionary Config { get; } = configDictionary;
 
     /// <summary>
-    /// Gets the IEqualityComparer&lt;string&gt; that is used to determine equality of keys for the dictionary.
+    /// Gets the IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
     /// </summary>
-    public IEqualityComparer<string> Comparer { get; } = config.Comparer;
+    public IEqualityComparer<string> Comparer { get; } = configDictionary.Comparer;
 
     /// <summary>
     /// Gets or sets the section associated with the specified section name.
     /// </summary>
     /// <param name="section">The section name of the section to get or set.</param>
-    /// <value> The section associated with the specified section name.</value>
     /// <remarks>
     /// If the specified section is not found, a get operation returns <c>None</c>, and a set operation creates a new
     /// section with the specified section name. If the section is <c>None</c>, a set operation removes the section
     /// with the specified section name from the configuration.
     /// </remarks>
-    public Option<Section> this[string section]
+    public Option<SectionDictionary> this[string section]
     {
         get => Config[section];
         set => Config[section] = value;
@@ -53,7 +54,6 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// </summary>
     /// <param name="section">The section name of the section to get or set.</param>
     /// <param name="key">The key of the value to get or set.</param>
-    /// <value> The value associated with the specified section name and key.</value>
     /// <remarks>
     /// If the specified value is not found, a get operation returns <c>None</c>, and a set operation creates a new
     /// value with the specified section name and key. If the value is <c>None</c>, a set operation removes the value
@@ -64,7 +64,7 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
         get => Config[section].Bind(sec => sec[key]);
         set => Config[section].Match(
             sec => sec[key] = value,
-            () => Config[section] = Some(new Section(Comparer) { [key] = value })
+            () => Config[section] = Some(new SectionDictionary(Comparer) { [key] = value })
         );
     }
 
@@ -86,7 +86,7 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// </summary>
     /// <param name="item">The object to locate in the configuration.</param>
     /// <returns>true if item is found in the configuration; otherwise, false.</returns>
-    public bool Contains(KeyValue<string, Section> item)
+    public bool Contains(KeyValue<string, SectionDictionary> item)
     {
         return Config.Contains(item);
     }
@@ -96,7 +96,7 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// </summary>
     /// <param name="item">The item to add to the configuration.</param>
     /// <returns><c>Some(item)</c> of the added element.</returns>
-    public Option<Section> Add(KeyValue<string, Section> item)
+    public Option<SectionDictionary> Add(KeyValue<string, SectionDictionary> item)
     {
         return Config.Add(item);
     }
@@ -105,7 +105,7 @@ public sealed partial class Ini(Config config) : IKeyValueCollection<string, Sec
     /// Returns an enumerator that iterates through the configuration.
     /// </summary>
     /// <returns>A <c>Enumerator</c> structure for the configuration.</returns>
-    public IEnumerator<KeyValue<string, Section>> GetEnumerator()
+    public IEnumerator<KeyValue<string, SectionDictionary>> GetEnumerator()
     {
         return Config.GetEnumerator();
     }

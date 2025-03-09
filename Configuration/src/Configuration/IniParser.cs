@@ -27,7 +27,9 @@ public partial class Ini
     {
         var section = "default";
 
-        foreach (var (number, line) in input.Split('\n').Select(RemoveComment).Select(NumberAndLine).Where(IsNotEmpty))
+        var lines = input.Split(["\n", "\r\n"], StringSplitOptions.None);
+
+        foreach (var (number, line) in lines.Select(RemoveComment).Select(NumberAndLine).Where(IsNotEmpty))
         {
             if (ParseSectionName(line).Bind(CreateSection).IsSome)
             {
@@ -44,9 +46,9 @@ public partial class Ini
 
         return Ok(ini);
 
-        Option<Section> CreateSection(string name)
+        Option<SectionDictionary> CreateSection(string name)
         {
-            return ini[section = name] = Some(new Section(ini.Comparer));
+            return ini[section = name] = Some(new SectionDictionary(ini.Comparer));
         }
 
         Option<string> AddOrUpdateParameter((string key, string value) parameter)
@@ -62,7 +64,11 @@ public partial class Ini
 
     private static Option<string> TrimSectionStart(string line)
     {
-        line = line.TrimStart();
+        return TrimSectionStartBracket(line.TrimStart());
+    }
+
+    private static Option<string> TrimSectionStartBracket(string line)
+    {
 #if NET
         return line.StartsWith('[') ? Some(line[1..].TrimStart()) : None;
 #else
@@ -72,7 +78,11 @@ public partial class Ini
 
     private static Option<string> TrimSectionEnd(string line)
     {
-        line = line.TrimEnd();
+        return TrimSectionEndBracket(line.TrimEnd());
+    }
+
+    private static Option<string> TrimSectionEndBracket(string line)
+    {
 #if NET
         return line.EndsWith(']') ? Some(line[..^1].TrimEnd()) : None;
 #else
@@ -82,7 +92,7 @@ public partial class Ini
 
     private static Option<(string, string)> ParseParameter(string line)
     {
-        return GetDelimeterIndex(line).Map(index => (line[..index].Trim(), line[(index + 1)..].Trim()));
+        return GetDelimiterIndex(line).Map(index => (line[..index].Trim(), line[(index + 1)..].Trim()));
     }
 
     private static string RemoveComment(string line)
@@ -90,17 +100,17 @@ public partial class Ini
         return GetCommentIndex(line).Match(index => line[..index], line);
     }
 
-    private static Option<int> GetDelimeterIndex(string line)
+    private static Option<int> GetDelimiterIndex(string line)
     {
-        return GetSomeIndex(line.IndexOf('='));
+        return ToSomeIndex(line.IndexOf('='));
     }
 
     private static Option<int> GetCommentIndex(string line)
     {
-        return GetSomeIndex(line.IndexOf('#'));
+        return ToSomeIndex(line.IndexOf('#'));
     }
 
-    private static Option<int> GetSomeIndex(int index)
+    private static Option<int> ToSomeIndex(int index)
     {
         return index >= 0 ? Some(index) : None;
     }

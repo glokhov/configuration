@@ -54,7 +54,7 @@ public static class IniExtensions
     /// <param name="ini">The <c>Ini</c> representation of an ini configuration.</param>
     /// <param name="section">The section name of the section to get.</param>
     /// <returns><c>Some(Section)</c> if the specified section is found; otherwise, <c>None</c>.</returns>
-    public static Option<Section> GetNested(this Ini ini, string section)
+    public static Option<SectionDictionary> GetNested(this Ini ini, string section)
     {
         return NestedForward(section).Select(nested => ini[nested]).Aggregate(SomeSection(ini), MergeSections);
     }
@@ -74,12 +74,12 @@ public static class IniExtensions
         return NestedBackward(section).Select(nested => ini[nested].Bind(sec => sec[key])).FirstOrDefault(opt => opt.IsSome);
     }
 
-    private static Option<Section> SomeSection(Ini ini)
+    private static Option<SectionDictionary> SomeSection(Ini ini)
     {
-        return Some(new Section(ini.Comparer));
+        return Some(new SectionDictionary(ini.Comparer));
     }
 
-    private static Option<Section> MergeSections(Option<Section> current, Option<Section> next)
+    private static Option<SectionDictionary> MergeSections(Option<SectionDictionary> current, Option<SectionDictionary> next)
     {
         return current.Bind(cur => next.IsSome ? next.Map(cur.Merge) : current);
     }

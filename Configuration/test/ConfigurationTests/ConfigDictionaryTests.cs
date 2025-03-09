@@ -1,12 +1,12 @@
 namespace ConfigurationTests;
 
-public sealed class ConfigTests
+public sealed class ConfigDictionaryTests
 {
     [Fact]
     public void Default_Ctor_Config_Ctor()
     {
-        var config = new Config { ["key"] = Some(new Section()) };
-        var copy = new Config(config);
+        var config = new ConfigDictionary { ["key"] = Some(new SectionDictionary()) };
+        var copy = new ConfigDictionary(config);
 
         Assert.True(copy["key"].IsSome);
         Assert.True(copy["KEY"].IsNone);
@@ -15,8 +15,8 @@ public sealed class ConfigTests
     [Fact]
     public void Comparer_Ctor_Config_Ctor()
     {
-        var config = new Config(StringComparer.OrdinalIgnoreCase) { ["key"] = Some(new Section()) };
-        var copy = new Config(config, config.Comparer);
+        var config = new ConfigDictionary(StringComparer.OrdinalIgnoreCase) { ["key"] = Some(new SectionDictionary()) };
+        var copy = new ConfigDictionary(config, config.Comparer);
 
         Assert.True(copy["key"].IsSome);
         Assert.True(copy["KEY"].IsSome);
@@ -25,45 +25,45 @@ public sealed class ConfigTests
     [Fact]
     public void Merge_Replaces_OldValues_Adds_NewValues()
     {
-        var first = new Config
+        var first = new ConfigDictionary
         {
-            ["aaa"] = Some(new Section
+            ["aaa"] = Some(new SectionDictionary
             {
                 ["aaa"] = Some("aaa")
             }),
-            ["bbb"] = Some(new Section
+            ["bbb"] = Some(new SectionDictionary
             {
                 ["ccc"] = Some("ccc"),
                 ["ddd"] = Some("xxx")
             })
         };
 
-        var second = new Config
+        var second = new ConfigDictionary
         {
-            ["bbb"] = Some(new Section
+            ["bbb"] = Some(new SectionDictionary
             {
                 ["ddd"] = Some("ddd"),
                 ["eee"] = Some("eee")
             }),
-            ["fff"] = Some(new Section
+            ["fff"] = Some(new SectionDictionary
             {
                 ["fff"] = Some("fff")
             })
         };
 
-        var merged = new Config
+        var merged = new ConfigDictionary
         {
-            ["aaa"] = Some(new Section
+            ["aaa"] = Some(new SectionDictionary
             {
                 ["aaa"] = Some("aaa")
             }),
-            ["bbb"] = Some(new Section
+            ["bbb"] = Some(new SectionDictionary
             {
                 ["ccc"] = Some("ccc"),
                 ["ddd"] = Some("ddd"),
                 ["eee"] = Some("eee")
             }),
-            ["fff"] = Some(new Section
+            ["fff"] = Some(new SectionDictionary
             {
                 ["fff"] = Some("fff")
             })
@@ -75,13 +75,13 @@ public sealed class ConfigTests
     [Fact]
     public void ToString_Creates_Ini_File_Content()
     {
-        var config = new Config
+        var config = new ConfigDictionary
         {
-            ["foo"] = Some(new Section
+            ["foo"] = Some(new SectionDictionary
             {
                 ["A"] = Some("aaa")
             }),
-            ["bar"] = Some(new Section
+            ["bar"] = Some(new SectionDictionary
             {
                 ["AB"] = Some("abb"),
                 ["ABC"] = Some("abc")
@@ -103,6 +103,6 @@ public sealed class ConfigTests
     [Fact]
     public void If_Section_Empty_ToString_Returns_Empty_String()
     {
-        Assert.Empty(new Config().ToString());
+        Assert.Empty(new ConfigDictionary().ToString());
     }
 }

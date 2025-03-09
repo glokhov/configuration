@@ -27,9 +27,7 @@ public partial class Ini
     {
         var section = "default";
 
-        var lines = input.Split('\n').Select(RemoveComment).Select(Trim).Select(WithNumber).Where(IsNotEmpty);
-
-        foreach (var (line, number) in lines)
+        foreach (var (number, line) in input.Split('\n').Select(RemoveComment).Select(NumberAndLine).Where(IsNotEmpty))
         {
             if (ParseSectionName(line).Bind(CreateSection).IsSome)
             {
@@ -46,69 +44,74 @@ public partial class Ini
 
         return Ok(ini);
 
-        Option<Section> CreateSection(SectionName sectionName)
+        Option<Section> CreateSection(string name)
         {
-            return ini[section = sectionName.Name] = Some(new Section(ini.Comparer));
+            return ini[section = name] = Some(new Section(ini.Comparer));
         }
 
-        Option<string> AddOrUpdateParameter(Parameter parameter)
+        Option<string> AddOrUpdateParameter((string key, string value) parameter)
         {
-            return ini[section, parameter.Key] = Some(parameter.Value);
+            return ini[section, parameter.key] = Some(parameter.value);
         }
     }
 
-    private static Option<SectionName> ParseSectionName(string line)
+    private static Option<string> ParseSectionName(string line)
     {
-        return IsSection(line) ? Some(new SectionName(line[1..^1].Trim())) : None;
+        return TrimSectionStart(line).Bind(TrimSectionEnd);
     }
 
-    private static bool IsSection(string line)
+    private static Option<string> TrimSectionStart(string line)
     {
+        line = line.TrimStart();
 #if NET
-        return line.StartsWith('[') && line.EndsWith(']');
+        return line.StartsWith('[') ? Some(line[1..].TrimStart()) : None;
 #else
-        return line.StartsWith("[") && line.EndsWith("]");
+        return line.StartsWith("[") ? Some(line[1..].TrimStart()) : None;
 #endif
     }
 
-    private static Option<Parameter> ParseParameter(string line)
+    private static Option<string> TrimSectionEnd(string line)
     {
-        return SplitParameter(line, line.IndexOf('='));
+        line = line.TrimEnd();
+#if NET
+        return line.EndsWith(']') ? Some(line[..^1].TrimEnd()) : None;
+#else
+        return line.EndsWith("]") ? Some(line[..^1].TrimEnd()) : None;
+#endif
     }
 
-    private static Option<Parameter> SplitParameter(string line, int index)
+    private static Option<(string, string)> ParseParameter(string line)
     {
-        return index < 0 ? None : Some(new Parameter(line[..index].Trim(), line[(index + 1)..].Trim()));
+        return GetDelimeterIndex(line).Map(index => (line[..index].Trim(), line[(index + 1)..].Trim()));
     }
 
     private static string RemoveComment(string line)
     {
-        return LineWithoutComment(line, line.IndexOf('#'));
+        return GetCommentIndex(line).Match(index => line[..index], line);
     }
 
-    private static string LineWithoutComment(string line, int indexOfComment)
+    private static Option<int> GetDelimeterIndex(string line)
     {
-        return indexOfComment < 0 ? line : line[..indexOfComment];
+        return GetSomeIndex(line.IndexOf('='));
     }
 
-    private static string Trim(string line)
+    private static Option<int> GetCommentIndex(string line)
     {
-        return line.Trim();
+        return GetSomeIndex(line.IndexOf('#'));
     }
 
-    private static LineWithNumber WithNumber(string line, int indexOfLine)
+    private static Option<int> GetSomeIndex(int index)
     {
-        return new LineWithNumber(line, indexOfLine + 1);
+        return index >= 0 ? Some(index) : None;
     }
 
-    private static bool IsNotEmpty(LineWithNumber line)
+    private static (int, string) NumberAndLine(string line, int index)
     {
-        return line.Text.Length > 0;
+        return (index + 1, line);
     }
 
-    private readonly record struct SectionName(string Name);
-
-    private readonly record struct Parameter(string Key, string Value);
-
-    private readonly record struct LineWithNumber(string Text, int Number);
+    private static bool IsNotEmpty((int number, string line) line)
+    {
+        return !string.IsNullOrWhiteSpace(line.line);
+    }
 }

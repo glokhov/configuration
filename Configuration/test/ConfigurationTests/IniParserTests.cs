@@ -15,7 +15,9 @@ public partial class IniTests
                                        "E = eee" + Environment.NewLine +
                                        "F = fff # fff";
 
-    private static readonly string X = "xxx" + Environment.NewLine;
+    private static readonly string P = "xxx" + Environment.NewLine;
+
+    private static readonly string S = "[zzz" + Environment.NewLine;
 
     // ReSharper disable once InconsistentNaming
     private static readonly string ABD = "[default]" + Environment.NewLine +
@@ -64,9 +66,15 @@ public partial class IniTests
     }
 
     [Fact]
-    public void Parse_Returns_Error_If_Cannot_Parse_Line()
+    public void Parse_Returns_Error_If_Cannot_Parse_Parameter()
     {
-        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Ini.Parse(A + X).ExpectError());
+        Assert.Equal("Cannot parse line 2: xxx.", Configuration.Ini.Parse(A + P).ExpectError());
+    }
+
+    [Fact]
+    public void Parse_Returns_Error_If_Cannot_Parse_Section()
+    {
+        Assert.Equal("Cannot parse line 1: [zzz.", Configuration.Ini.Parse(S + B).ExpectError());
     }
 
     [Fact]

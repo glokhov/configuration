@@ -25,7 +25,7 @@ public partial class Ini
 
     private static Result<Ini, string> Parse(string input, Ini ini)
     {
-        var section = "default";
+        var section = "";
 
         var lines = input.Split(["\n", "\r\n"], StringSplitOptions.None);
 

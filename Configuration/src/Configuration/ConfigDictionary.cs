@@ -79,11 +79,14 @@ public sealed class ConfigDictionary : KeyValueDictionary<string, SectionDiction
 
         foreach (var (key, value) in this.Where(pair => pair.Value.Count > 0))
         {
-            builder.Append('[');
-            builder.Append(key);
-            builder.Append(']');
-            builder.Append(Environment.NewLine);
-            builder.Append(Environment.NewLine);
+            if (key.Length > 0)
+            {
+                builder.Append('[');
+                builder.Append(key);
+                builder.Append(']');
+                builder.Append(Environment.NewLine);
+                builder.Append(Environment.NewLine);
+            }
             builder.Append(value);
             builder.Append(Environment.NewLine);
         }

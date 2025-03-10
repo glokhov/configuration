@@ -31,9 +31,7 @@ public partial class IniTests
                                          "F = fff" + Environment.NewLine;
 
     // ReSharper disable once InconsistentNaming
-    private static readonly string BC = "[default]" + Environment.NewLine +
-                                        "" + Environment.NewLine +
-                                        "A = aaa" + Environment.NewLine +
+    private static readonly string BC = "A = aaa" + Environment.NewLine +
                                         "B = bbb" + Environment.NewLine +
                                         "" + Environment.NewLine +
                                         "[foo]" + Environment.NewLine +

@@ -50,7 +50,7 @@ public partial class IniTests
     {
         var configuration = Configuration.Ini.Parse(C).Unwrap();
 
-        Assert.True(configuration["FOO"].IsNone);
+        Assert.True(configuration.GetSection("FOO").IsNone);
         Assert.True(configuration["foo", "c"].IsNone);
     }
 
@@ -59,7 +59,7 @@ public partial class IniTests
     {
         var ini = Configuration.Ini.Parse(C, StringComparer.OrdinalIgnoreCase).Unwrap();
 
-        Assert.True(ini["FOO"].IsSome);
+        Assert.True(ini.GetSection("FOO").IsSome);
         Assert.True(ini["foo", "c"].IsSome);
     }
 
@@ -84,6 +84,10 @@ public partial class IniTests
     [Fact]
     public void Parse_No_Section_At_Begin()
     {
-        Assert.Equal($"{BC}", Configuration.Ini.Parse(B + C).Unwrap().ToString());
+        var ini = Configuration.Ini.Parse(B + C).Unwrap();
+        
+        Assert.Equal($"{BC}", ini.ToString());
+        Assert.True(ini["A"].IsSome);
+        Assert.True(ini["foo", "C"].IsSome);
     }
 }

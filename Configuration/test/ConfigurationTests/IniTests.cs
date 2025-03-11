@@ -71,4 +71,18 @@ public sealed partial class IniTests
         Assert.False(ini.Contains(sectionKeyValue));
         Assert.Equal(0, ini.Count);
     }
+
+    [Fact]
+    public void Indexer_Global_Section_Sets_Removes()
+    {
+        Ini ini = [];
+
+        ini["key"] = Some("Value");
+
+        Assert.Equal("Value", ini["key"].Unwrap());
+
+        ini["key"] = None;
+
+        Assert.True(ini["key"].IsNone);
+    }
 }

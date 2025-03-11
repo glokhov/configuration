@@ -6,9 +6,12 @@ namespace ConfigurationTests;
 
 public sealed class ReadMeTests : IDisposable
 {
-    private static readonly string InitialContent = "[section_one]" + Environment.NewLine +
+    private static readonly string InitialContent = "# GlobalSection" + Environment.NewLine +
                                                     "" + Environment.NewLine +
-                                                    "# Comment" + Environment.NewLine +
+                                                    "KeyOne = GlobalSection_ValueOne" + Environment.NewLine +
+                                                    "KeyTwo = GlobalSection_ValueTwo" + Environment.NewLine +
+                                                    "" + Environment.NewLine +
+                                                    "[section_one]" + Environment.NewLine +
                                                     "" + Environment.NewLine +
                                                     "KeyOne = SectionOne_ValueOne" + Environment.NewLine +
                                                     "KeyTwo = SectionOne_ValueTwo" + Environment.NewLine +
@@ -24,7 +27,10 @@ public sealed class ReadMeTests : IDisposable
                                                     "KeyOne = SectionThree_ValueOne" + Environment.NewLine +
                                                     "KeyTwo = SectionThree_ValueTwo" + Environment.NewLine;
 
-    private static readonly string FinalContent = "[section_one]" + Environment.NewLine +
+    private static readonly string FinalContent = "KeyOne = GlobalSection_ValueOne" + Environment.NewLine +
+                                                  "KeyTwo = GlobalSection_ValueTwo" + Environment.NewLine +
+                                                  "" + Environment.NewLine +
+                                                  "[section_one]" + Environment.NewLine +
                                                   "" + Environment.NewLine +
                                                   "KeyOne   = SectionOne_ValueOne_Changed" + Environment.NewLine +
                                                   "KeyTwo   = SectionOne_ValueTwo" + Environment.NewLine +
@@ -52,19 +58,18 @@ public sealed class ReadMeTests : IDisposable
         // Use Match() function to extract the configuration:
 
         Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
+        
+        // Use ```Item[key]``` property to get or set a global section value:
+        
+        Option<string> globalOne = ini["KeyOne"];
+        Option<string> globalTwo = ini["KeyTwo"];
+        Option<string> globalThree = ini["KeyThree"];
 
-        // Use Item[section] property to get a section:
+        Assert.Equal("Some(GlobalSection_ValueOne)", globalOne.ToString());
+        Assert.Equal("Some(GlobalSection_ValueTwo)", globalTwo.ToString());
+        Assert.Equal("None", globalThree.ToString());
 
-        Option<SectionDictionary> one = ini["section_one"];
-        Option<SectionDictionary> four = ini["section_four"];
-
-        bool oneIsSome = one.IsSome;
-        bool fourIsNone = four.IsNone;
-
-        Assert.True(oneIsSome);
-        Assert.True(fourIsNone);
-
-        // Use Item[section, key] property to get a value:
+        // Use Item[section, key] property to get or set a value:
 
         Option<string> oneOne = ini["section_one", "KeyOne"];
         Option<string> twoTwo = ini["section_two", "KeyTwo"];
@@ -119,17 +124,28 @@ public sealed class ReadMeTests : IDisposable
         Option<string> twoThree = ini["section_two", "KeyThree"];
 
         string twoThreeValue = twoThree.Match(some => some, "none");
-        
+
         Assert.Equal("none", twoThreeValue);
 
-        // Set None to remove the section:
+        // Call GetSection function to get a section:
 
-        ini["section_three"] = None;
+        Option<SectionDictionary> one = ini.GetSection("section_one");
+        Option<SectionDictionary> four = ini.GetSection("section_four");
 
-        Option<SectionDictionary> three = ini["section_three"];
+        bool oneIsSome = one.IsSome;
+        bool fourIsNone = four.IsNone;
+
+        Assert.True(oneIsSome);
+        Assert.True(fourIsNone);
+
+        // Call SetSection function and pass None to remove the section:
+
+        ini.SetSection("section_three", None);
+
+        Option<SectionDictionary> three = ini.GetSection("section_three");
 
         bool threeIsNone = three.IsNone;
-        
+
         Assert.True(threeIsNone);
 
         // Write configuration to the file:

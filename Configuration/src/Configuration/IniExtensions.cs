@@ -56,7 +56,7 @@ public static class IniExtensions
     /// <returns><c>Some(Section)</c> if the specified section is found; otherwise, <c>None</c>.</returns>
     public static Option<SectionDictionary> GetNested(this Ini ini, string section)
     {
-        return NestedForward(section).Select(nested => ini[nested]).Aggregate(SomeSection(ini), MergeSections);
+        return NestedForward(section).Select(ini.GetSection).Aggregate(SomeSection(ini), MergeSections);
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public static class IniExtensions
     /// <returns><c>Some(string)</c> if the specified value is found; otherwise, <c>None</c>.</returns>
     public static Option<string> GetNested(this Ini ini, string section, string key)
     {
-        return NestedBackward(section).Select(nested => ini[nested].Bind(sec => sec[key])).FirstOrDefault(opt => opt.IsSome);
+        return NestedBackward(section).Select(nested => ini.GetSection(nested).Bind(sec => sec[key])).FirstOrDefault(opt => opt.IsSome);
     }
 
     private static Option<SectionDictionary> SomeSection(Ini ini)

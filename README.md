@@ -17,9 +17,12 @@ using static Configuration.Prelude;
 ```
 Initial Configuration.ini content:
 ```ini
-[section_one]
+# GlobalSection
 
-# Comment
+KeyOne = GlobalSection_ValueOne
+KeyTwo = GlobalSection_ValueTwo
+
+[section_one]
 
 KeyOne = SectionOne_ValueOne
 KeyTwo = SectionOne_ValueTwo
@@ -44,18 +47,17 @@ Use ```Match()``` function to extract the configuration:
 ```csharp
 Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
 ```
-Use ```Item[section]``` property to get a section:
+Use ```Item[key]``` property to get or set a global section value:
 ```csharp
-Option<Section> one = ini["section_one"];
-Option<Section> four = ini["section_four"];
+Option<string> globalOne = ini["KeyOne"];
+Option<string> globalTwo = ini["KeyTwo"];
+Option<string> globalThree = ini["KeyThree"];
 
-bool oneIsSome = one.IsSome;
-bool fourIsNone = four.IsNone;
-
-Assert.True(oneIsSome);
-Assert.True(fourIsNone);
+Assert.Equal("Some(GlobalSection_ValueOne)", globalOne.ToString());
+Assert.Equal("Some(GlobalSection_ValueTwo)", globalTwo.ToString());
+Assert.Equal("None", globalThree.ToString());
 ```
-Use ```Item[section, key]``` property to get a value:
+Use ```Item[section, key]``` property to get or set a value:
 ```csharp
 Option<string> oneOne = ini["section_one", "KeyOne"];
 Option<string> twoTwo = ini["section_two", "KeyTwo"];
@@ -113,11 +115,22 @@ string twoThreeValue = twoThree.Match(some => some, "none");
 
 Assert.Equal("none", twoThreeValue);
 ```
-Set ```None``` to remove the section:
+Call ```GetSection``` function to get a section:
 ```csharp
-ini["section_three"] = None;
+Option<SectionDictionary> one = ini.GetSection("section_one");
+Option<SectionDictionary> four = ini.GetSection("section_four");
 
-Option<Section> three = ini["section_three"];
+bool oneIsSome = one.IsSome;
+bool fourIsNone = four.IsNone;
+
+Assert.True(oneIsSome);
+Assert.True(fourIsNone);
+```
+Call ```SetSection``` function and pass ```None``` to remove the section:
+```csharp
+ini.SetSection("section_three", None);
+
+Option<SectionDictionary> three = ini.GetSection("section_three");
 
 bool threeIsNone = three.IsNone;
 
@@ -129,6 +142,9 @@ ini.WriteTo(new FileInfo("Configuration.ini"));
 ```
 Final Configuration.ini content:
 ```ini
+KeyOne = GlobalSection_ValueOne
+KeyTwo = GlobalSection_ValueTwo
+
 [section_one]
 
 KeyOne   = SectionOne_ValueOne_Changed

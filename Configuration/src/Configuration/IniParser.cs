@@ -2,6 +2,8 @@ namespace Configuration;
 
 public partial class Ini
 {
+    private const string GlobalSection = "";
+
     /// <summary>
     /// Parses the text representing of an ini configuration into an instance of the type <c>Ini</c>.
     /// </summary>
@@ -25,7 +27,7 @@ public partial class Ini
 
     private static Result<Ini, string> Parse(string input, Ini ini)
     {
-        var section = "";
+        var section = GlobalSection;
 
         var lines = input.Split(["\n", "\r\n"], StringSplitOptions.None);
 
@@ -48,12 +50,12 @@ public partial class Ini
 
         Option<SectionDictionary> CreateSection(string name)
         {
-            return ini[section = name] = Some(new SectionDictionary(ini.Comparer));
+            return ini.SetSection(section = name, Some(new SectionDictionary(ini.Comparer)));
         }
 
         Option<string> AddOrUpdateParameter((string key, string value) parameter)
         {
-            return ini[section, parameter.key] = Some(parameter.value);
+            return ini.SetValue(section, parameter.key, Some(parameter.value));
         }
     }
 

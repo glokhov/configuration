@@ -35,18 +35,18 @@ public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCo
     public IEqualityComparer<string> Comparer { get; } = configDictionary.Comparer;
 
     /// <summary>
-    /// Gets or sets the section associated with the specified section name.
+    /// Gets or sets the value associated with the specified key.
     /// </summary>
-    /// <param name="section">The section name of the section to get or set.</param>
+    /// <param name="key">The key of the value to get or set.</param>
     /// <remarks>
-    /// If the specified section is not found, a get operation returns <c>None</c>, and a set operation creates a new
-    /// section with the specified section name. If the section is <c>None</c>, a set operation removes the section
-    /// with the specified section name from the configuration.
+    /// If the specified value is not found, a get operation returns <c>None</c>, and a set operation creates a new
+    /// value with the specified key. If the value is <c>None</c>, a set operation removes the value
+    /// with the specified key from the configuration.
     /// </remarks>
-    public Option<SectionDictionary> this[string section]
+    public Option<string> this[string key]
     {
-        get => Config[section];
-        set => Config[section] = value;
+        get => GetValue(GlobalSection, key);
+        set => SetValue(GlobalSection, key, value);
     }
 
     /// <summary>
@@ -61,11 +61,49 @@ public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCo
     /// </remarks>
     public Option<string> this[string section, string key]
     {
-        get => Config[section].Bind(sec => sec[key]);
-        set => Config[section].Match(
-            sec => sec[key] = value,
-            () => Config[section] = Some(new SectionDictionary(Comparer) { [key] = value })
-        );
+        get => GetValue(section, key);
+        set => SetValue(section, key, value);
+    }
+
+    /// <summary>
+    /// Gets the section associated with the specified section name.
+    /// </summary>
+    /// <param name="section">The section name of the section to get.</param>
+    /// <returns><c>Some</c> value if section is found in the configuration; otherwise, <c>None</c>.</returns>
+    public Option<SectionDictionary> GetSection(string section)
+    {
+        return Config[section];
+    }
+
+    /// <summary>
+    /// Sets the section associated with the specified section name. Removes the section, if the section is <c>None</c>.
+    /// </summary>
+    /// <param name="section">The section name of the section to set.</param>
+    /// <param name="value">The section to set.</param>
+    /// <returns><c>None</c> if section is removed from the configuration; otherwise, <c>Some</c> value.</returns>
+    public Option<SectionDictionary> SetSection(string section, Option<SectionDictionary> value)
+    {
+        return Config[section] = value;
+    }
+
+    private Option<string> GetValue(string section, string key)
+    {
+        return Config[section].Bind(sec => sec[key]);
+    }
+
+    private Option<string> SetValue(string section, string key, Option<string> value)
+    {
+        return Config[section].Match(SetSectionValue, AddSectionValue);
+
+        Option<string> SetSectionValue(SectionDictionary sectionDictionary)
+        {
+            return sectionDictionary[key] = value;
+        }
+
+        Option<string> AddSectionValue()
+        {
+            return (Config[section] = Some(new SectionDictionary(Comparer) { [key] = value })).Bind(sec => sec[key]);
+        }
     }
 
     /// <summary>

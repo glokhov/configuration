@@ -56,10 +56,11 @@ public partial class IniTests : IDisposable
     }
 
     [Fact]
-    public void Get_Section_Key_Returns_Parent_Values()
+    public void GetNested_Section_Key_Returns_Parent_Values()
     {
         var ini = new Ini
         {
+            ["aaa"] = Some("aaa"),
             ["foo", "foo"] = Some("foo"),
             ["foo", "xxx"] = Some("xxx"),
             ["foo.bar", "bar"] = Some("bar"),
@@ -78,14 +79,16 @@ public partial class IniTests : IDisposable
         Assert.Equal("bar", ini.GetNested("foo.bar.baz", "bar").Unwrap());
         Assert.Equal("zzz", ini.GetNested("foo.bar.baz", "xxx").Unwrap());
 
-        Assert.True(ini.GetNested("foo.bar.baz", "aaa").IsNone);
+        Assert.True(ini.GetNested("foo.bar.baz", "aaa").IsSome);
+        Assert.True(ini.GetNested("foo.bar.baz", "bbb").IsNone);
     }
 
     [Fact]
-    public void Get_Section_Returns_Parent_Values()
+    public void GetNested_Section_Returns_Parent_Values()
     {
         var ini = new Ini
         {
+            ["aaa"] = Some("aaa"),
             ["foo", "foo"] = Some("foo"),
             ["foo", "xxx"] = Some("xxx"),
             ["foo.bar", "bar"] = Some("bar"),
@@ -97,20 +100,23 @@ public partial class IniTests : IDisposable
         var bar = ini.GetNested("foo.bar").Unwrap();
         var baz = ini.GetNested("foo.bar.baz").Unwrap();
 
+        Assert.Equal("aaa", foo["aaa"].Unwrap());
         Assert.Equal("foo", foo["foo"].Unwrap());
         Assert.Equal("xxx", foo["xxx"].Unwrap());
 
+        Assert.Equal("aaa", bar["aaa"].Unwrap());
         Assert.Equal("foo", bar["foo"].Unwrap());
         Assert.Equal("bar", bar["bar"].Unwrap());
         Assert.Equal("yyy", bar["xxx"].Unwrap());
 
+        Assert.Equal("aaa", baz["aaa"].Unwrap());
         Assert.Equal("foo", baz["foo"].Unwrap());
         Assert.Equal("bar", baz["bar"].Unwrap());
         Assert.Equal("zzz", baz["xxx"].Unwrap());
     }
 
     [Fact]
-    public void Test()
+    public void GetNested_Section_Returns_None_If_Parent_Does_Not_Exist()
     {
         var ini = new Ini
         {

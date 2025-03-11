@@ -19,6 +19,8 @@ public partial class IniTests
 
     private static readonly string S = "[zzz" + Environment.NewLine;
 
+    private static readonly string G = "[]" + Environment.NewLine;
+
     // ReSharper disable once InconsistentNaming
     private static readonly string ABD = "[default]" + Environment.NewLine +
                                          "" + Environment.NewLine +
@@ -76,6 +78,12 @@ public partial class IniTests
     }
 
     [Fact]
+    public void Parse_Returns_Error_If_Cannot_Parse_Empty_Section()
+    {
+        Assert.Equal("Cannot parse line 1: [].", Configuration.Ini.Parse(G + B).ExpectError());
+    }
+
+    [Fact]
     public void Parse_No_Eol_At_End()
     {
         Assert.Equal($"{ABD}", Configuration.Ini.Parse(A + B + D).Unwrap().ToString());
@@ -85,7 +93,7 @@ public partial class IniTests
     public void Parse_No_Section_At_Begin()
     {
         var ini = Configuration.Ini.Parse(B + C).Unwrap();
-        
+
         Assert.Equal($"{BC}", ini.ToString());
         Assert.True(ini["A"].IsSome);
         Assert.True(ini["foo", "C"].IsSome);

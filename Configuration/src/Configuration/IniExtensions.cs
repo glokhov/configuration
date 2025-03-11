@@ -88,6 +88,8 @@ public static class IniExtensions
     {
         var index = -1;
 
+        yield return Ini.GlobalSection;
+
         while ((index = section.IndexOf('.', index + 1)) > 0)
         {
             yield return section[..index];
@@ -106,5 +108,7 @@ public static class IniExtensions
         {
             yield return section = section[..index];
         }
+
+        yield return Ini.GlobalSection;
     }
 }

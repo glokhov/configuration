@@ -45,8 +45,8 @@ public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCo
     /// </remarks>
     public Option<string> this[string key]
     {
-        get => GetValue(GlobalSection, key);
-        set => SetValue(GlobalSection, key, value);
+        get => this[GlobalSection, key];
+        set => this[GlobalSection, key] = value;
     }
 
     /// <summary>
@@ -63,6 +63,25 @@ public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCo
     {
         get => GetValue(section, key);
         set => SetValue(section, key, value);
+    }
+
+    /// <summary>
+    /// Gets the global section.
+    /// </summary>
+    /// <returns><c>Some</c> value if global section exists in the configuration; otherwise, <c>None</c>.</returns>
+    public Option<SectionDictionary> GetGlobalSection()
+    {
+        return GetSection(GlobalSection);
+    }
+
+    /// <summary>
+    /// Sets the global section. Removes the section, if the section is <c>None</c>.
+    /// </summary>
+    /// <param name="value">The section to set.</param>
+    /// <returns><c>None</c> if section is removed from the configuration; otherwise, <c>Some</c> value.</returns>
+    public Option<SectionDictionary> SetGlobalSection(Option<SectionDictionary> value)
+    {
+        return SetSection(GlobalSection, value);
     }
 
     /// <summary>

@@ -85,4 +85,36 @@ public sealed partial class IniTests
 
         Assert.True(ini["key"].IsNone);
     }
+
+    [Fact]
+    public void GetSection_SetSection_Get_Sets_Removes()
+    {
+        var ini = new Ini();
+
+        Assert.True(ini.GetSection("section").IsNone);
+
+        ini.SetSection("section", Some<SectionDictionary>([]));
+
+        Assert.True(ini.GetSection("section").IsSome);
+
+        ini.SetSection("section", None);
+
+        Assert.True(ini.GetSection("section").IsNone);
+    }
+
+    [Fact]
+    public void GetGlobalSection_SetGlobalSection_Get_Sets_Removes()
+    {
+        var ini = new Ini();
+
+        Assert.True(ini.GetGlobalSection().IsNone);
+
+        ini.SetGlobalSection(Some<SectionDictionary>([]));
+
+        Assert.True(ini.GetGlobalSection().IsSome);
+
+        ini.SetGlobalSection(None);
+
+        Assert.True(ini.GetGlobalSection().IsNone);
+    }
 }

@@ -2,7 +2,7 @@ namespace Configuration;
 
 public partial class Ini
 {
-    private const string GlobalSection = "";
+    internal const string GlobalSection = "";
 
     /// <summary>
     /// Parses the text representing of an ini configuration into an instance of the type <c>Ini</c>.
@@ -50,7 +50,7 @@ public partial class Ini
 
         Option<SectionDictionary> CreateSection(string name)
         {
-            return ini.SetSection(section = name, Some(new SectionDictionary(ini.Comparer)));
+            return name.Length > 0 ? ini.SetSection(section = name, Some(new SectionDictionary(ini.Comparer))) : None;
         }
 
         Option<string> AddOrUpdateParameter((string key, string value) parameter)

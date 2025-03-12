@@ -117,4 +117,52 @@ public sealed partial class IniTests
 
         Assert.True(ini.GetGlobalSection().IsNone);
     }
+
+    [Fact]
+    public void ToString_Places_Global_Section_At_Start()
+    {
+        var ini = new Ini
+        {
+            ["key"] = Some("value"),
+            ["foo", "foo"] = Some("value"),
+            ["bar", "bar"] = Some("value")
+        };
+
+        var expected = "key = value" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "[foo]" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "foo = value" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "[bar]" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "bar = value" +
+                       "" + Environment.NewLine;
+        
+        Assert.Equal(expected, ini.ToString());
+    }
+
+    [Fact]
+    public void ToString_Moves_Global_Section_To_Start()
+    {
+        var ini = new Ini
+        {
+            ["foo", "foo"] = Some("value"),
+            ["bar", "bar"] = Some("value"),
+            ["key"] = Some("value")
+        };
+
+        var expected = "key = value" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "[foo]" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "foo = value" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "[bar]" + Environment.NewLine +
+                       "" + Environment.NewLine +
+                       "bar = value" +
+                       "" + Environment.NewLine;
+        
+        Assert.Equal(expected, ini.ToString());
+    }
 }

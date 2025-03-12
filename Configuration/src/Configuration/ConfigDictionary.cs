@@ -77,7 +77,7 @@ public sealed class ConfigDictionary : KeyValueDictionary<string, SectionDiction
 
         var builder = new StringBuilder();
 
-        foreach (var (key, value) in this.Where(pair => pair.Value.Count > 0))
+        foreach (var (key, value) in this.OrderBy(item => item.Key, GlobalSectionFirstComparer.Instance).Where(item => item.Value.Count > 0))
         {
             if (key.Length > 0)
             {
@@ -87,10 +87,31 @@ public sealed class ConfigDictionary : KeyValueDictionary<string, SectionDiction
                 builder.Append(Environment.NewLine);
                 builder.Append(Environment.NewLine);
             }
+
             builder.Append(value);
             builder.Append(Environment.NewLine);
         }
 
         return builder.Remove(builder.Length - Environment.NewLine.Length, Environment.NewLine.Length).ToString();
+    }
+
+    private class GlobalSectionFirstComparer : IComparer<string>
+    {
+        public static IComparer<string> Instance { get; } = new GlobalSectionFirstComparer();
+
+        public int Compare(string? x, string? y)
+        {
+            if (x!.Length == 0)
+            {
+                return -1;
+            }
+
+            if (y!.Length == 0)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net6.0;netstandard2.0;net48</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -9,7 +9,7 @@
         <Description>Simple INI parser and writer</Description>
         <PackageId>Configuration.Ini</PackageId>
         <PackageTags>configuration;ini</PackageTags>
-        <PackageProjectUrl>https://github.com/glokhov/configuration/</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/glokhov/configuration</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
@@ -21,10 +21,9 @@
     </PropertyGroup>
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48' ">
         <PackageReference Include="IndexRange" Version="1.0.3" />
-        <PackageReference Include="IsExternalInit" Version="1.0.3" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Functional.Monad" Version="0.1.9" />
+        <PackageReference Include="Functional.Monad" Version="0.1.10" />
     </ItemGroup>
     <ItemGroup>
         <None Include="../../../README.md" Pack="true" Visible="false" PackagePath="/" />

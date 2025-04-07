@@ -1,8 +1,8 @@
 ﻿<Solution>
-    <Folder Name="/src/">
-        <Project Path="Configuration\src\Configuration\Configuration.csproj" Type="Classic C#" />
-    </Folder>
-    <Folder Name="/test/">
-        <Project Path="Configuration\test\ConfigurationTests\ConfigurationTests.csproj" Type="Classic C#" />
-    </Folder>
+  <Folder Name="/src/">
+    <Project Path="Configuration\src\Configuration\Configuration.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="Configuration\test\Configuration.Tests\Configuration.Tests.csproj" Type="Classic C#" />
+  </Folder>
 </Solution>

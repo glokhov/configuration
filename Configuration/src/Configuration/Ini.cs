@@ -1,16 +1,24 @@
 using System.Collections;
+using System.Text;
 
 namespace Configuration;
 
 /// <summary>
-/// Represents an ini file configuration.
+/// Represents an INI configuration.
 /// </summary>
-public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCollection<string, SectionDictionary>
+public sealed partial class Ini : IEnumerable<(string Section, string Key, string Value)>
 {
+    private const string Global = "";
+
+    /// <summary>
+    /// The empty configuration.
+    /// </summary>
+    public static Ini Empty => [];
+
     /// <summary>
     /// Initializes a new instance of the <c>Ini</c> class.
     /// </summary>
-    public Ini() : this([])
+    public Ini() : this([], StringComparer.OrdinalIgnoreCase)
     {
     }
 
@@ -18,153 +26,160 @@ public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCo
     /// Initializes a new instance of the <c>Ini</c> class.
     /// </summary>
     /// <param name="comparer">
-    /// The IEqualityComparer&lt;T&gt; implementation to use when comparing section names and keys.
+    /// The IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
     /// </param>
-    public Ini(IEqualityComparer<string> comparer) : this(new ConfigDictionary(comparer))
+    public Ini(IEqualityComparer<string> comparer) : this([], comparer)
     {
     }
 
     /// <summary>
-    /// The internal <c>ConfigDictionary</c> dictionary.
+    /// Initializes a new instance of the <c>Ini</c> class.
     /// </summary>
-    public ConfigDictionary Config { get; } = configDictionary;
+    /// <param name="elements">An <c>IEnumerable</c> to create an <c>Ini</c> from.</param>
+    public Ini(IEnumerable<(string Section, string Key, string Value)> elements) : this(elements, StringComparer.OrdinalIgnoreCase)
+    {
+    }
 
     /// <summary>
-    /// Gets the IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// Initializes a new instance of the <c>Ini</c> class.
     /// </summary>
-    public IEqualityComparer<string> Comparer { get; } = configDictionary.Comparer;
+    /// <param name="elements">An <c>IEnumerable</c> to create an <c>Ini</c> from.</param>
+    /// <param name="comparer">
+    /// The IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// </param>
+    public Ini(IEnumerable<(string Section, string Key, string Value)> elements, IEqualityComparer<string> comparer)
+    {
+        Dict = elements.ToDictionary(item => (item.Section, item.Key), item => item.Value, new KeyComparer(comparer));
+        Comparer = comparer;
+    }
+
+    internal Dictionary<(string Section, string Key), string> Dict { get; }
+
+    internal IEqualityComparer<string> Comparer { get; }
 
     /// <summary>
     /// Gets or sets the value associated with the specified key.
     /// </summary>
-    /// <param name="key">The key of the value to get or set.</param>
+    /// <param name="key">The key of a value in the global section.</param>
     /// <remarks>
-    /// If the specified value is not found, a get operation returns <c>None</c>, and a set operation creates a new
-    /// value with the specified key. If the value is <c>None</c>, a set operation removes the value
+    /// If the specified value is not found, a get operation returns <c>None</c>,
+    /// and a set operation creates a new value with the specified key.
+    /// If the value is <c>None</c>, a set operation removes the value
     /// with the specified key from the configuration.
     /// </remarks>
     public Option<string> this[string key]
     {
-        get => this[GlobalSection, key];
-        set => this[GlobalSection, key] = value;
+        get => this[Global, key];
+        set => this[Global, key] = value;
     }
 
     /// <summary>
-    /// Gets or sets the value associated with the specified section name and key.
+    /// Gets or sets the value associated with the specified key.
     /// </summary>
-    /// <param name="section">The section name of the section to get or set.</param>
-    /// <param name="key">The key of the value to get or set.</param>
+    /// <param name="section">The name of a section in the configuration.</param>
+    /// <param name="key">The key of a value in the specified section.</param>
     /// <remarks>
-    /// If the specified value is not found, a get operation returns <c>None</c>, and a set operation creates a new
-    /// value with the specified section name and key. If the value is <c>None</c>, a set operation removes the value
+    /// If the specified value is not found, a get operation returns <c>None</c>,
+    /// and a set operation creates a new value with the specified section name and key.
+    /// If the value is <c>None</c>, a set operation removes the value
     /// with the specified section name and key from the configuration.
     /// </remarks>
     public Option<string> this[string section, string key]
     {
-        get => GetValue(section, key);
-        set => SetValue(section, key, value);
+        get => Get(section, key);
+        set => Set(section, key, value);
     }
 
     /// <summary>
-    /// Gets the global section.
+    /// Gets whether the configuration is empty.
     /// </summary>
-    /// <returns><c>Some</c> value if global section exists in the configuration; otherwise, <c>None</c>.</returns>
-    public Option<SectionDictionary> GetGlobalSection()
+    public bool IsEmpty => Count == 0;
+
+    /// <summary>
+    /// The number of values in the configuration.
+    /// </summary>
+    public int Count => Dict.Count;
+
+    /// <summary>
+    /// Removes all values from the configuration.
+    /// </summary>
+    public void Clear() => Dict.Clear();
+
+    /// <summary>
+    /// Determines whether the configuration contains a specific value.
+    /// </summary>
+    /// <param name="key">The key of a value in the global section.</param>
+    /// <returns>true if a value is found in the configuration; otherwise, false.</returns>
+    public bool Contains(string key)
     {
-        return GetSection(GlobalSection);
+        return Contains(Global, key);
     }
 
     /// <summary>
-    /// Sets the global section. Removes the section, if the section is <c>None</c>.
+    /// Determines whether the configuration contains a specific value.
     /// </summary>
-    /// <param name="value">The section to set.</param>
-    /// <returns><c>None</c> if section is removed from the configuration; otherwise, <c>Some</c> value.</returns>
-    public Option<SectionDictionary> SetGlobalSection(Option<SectionDictionary> value)
+    /// <param name="section">The name of a section in the configuration.</param>
+    /// <param name="key">The key of a value in the specified section.</param>
+    /// <returns>true if a value is found in the configuration; otherwise, false.</returns>
+    public bool Contains(string section, string key)
     {
-        return SetSection(GlobalSection, value);
+        return Dict.ContainsKey((section, key));
     }
 
     /// <summary>
-    /// Gets the section associated with the specified section name.
+    /// Adds a value to the configuration.
     /// </summary>
-    /// <param name="section">The section name of the section to get.</param>
-    /// <returns><c>Some</c> value if section is found in the configuration; otherwise, <c>None</c>.</returns>
-    public Option<SectionDictionary> GetSection(string section)
+    /// <param name="key">The key of a value in the global section.</param>
+    /// <param name="value">The value to add.</param>
+    public void Add(string key, string value)
     {
-        return Config[section];
+        Add(Global, key, value);
     }
 
     /// <summary>
-    /// Sets the section associated with the specified section name. Removes the section, if the section is <c>None</c>.
+    /// Adds a value to the configuration.
     /// </summary>
-    /// <param name="section">The section name of the section to set.</param>
-    /// <param name="value">The section to set.</param>
-    /// <returns><c>None</c> if section is removed from the configuration; otherwise, <c>Some</c> value.</returns>
-    public Option<SectionDictionary> SetSection(string section, Option<SectionDictionary> value)
+    /// <param name="section">The name of a section in the configuration.</param>
+    /// <param name="key">The key of a value in the specified section.</param>
+    /// <param name="value">The value to add.</param>
+    public void Add(string section, string key, string value)
     {
-        return Config[section] = value;
-    }
-
-    private Option<string> GetValue(string section, string key)
-    {
-        return Config[section].Bind(sec => sec[key]);
-    }
-
-    private Option<string> SetValue(string section, string key, Option<string> value)
-    {
-        return Config[section].Match(SetSectionValue, AddSectionValue);
-
-        Option<string> SetSectionValue(SectionDictionary sectionDictionary)
-        {
-            return sectionDictionary[key] = value;
-        }
-
-        Option<string> AddSectionValue()
-        {
-            return (Config[section] = Some(new SectionDictionary(Comparer) { [key] = value })).Bind(sec => sec[key]);
-        }
+        Dict[(section, key)] = value;
     }
 
     /// <summary>
-    /// Gets the number of sections contained in the configuration.
+    /// Removes a value from the configuration.
     /// </summary>
-    public int Count => Config.Count;
-
-    /// <summary>
-    /// Removes all sections from the configuration.
-    /// </summary>
-    public void Clear()
+    /// <param name="key">The key of a value in the global section.</param>
+    public void Remove(string key)
     {
-        Config.Clear();
+        Remove(Global, key);
     }
 
     /// <summary>
-    /// Determines whether the configuration contains a specific item.
+    /// Removes a value from the configuration.
     /// </summary>
-    /// <param name="item">The object to locate in the configuration.</param>
-    /// <returns>true if item is found in the configuration; otherwise, false.</returns>
-    public bool Contains(KeyValue<string, SectionDictionary> item)
+    /// <param name="section">The name of a section in the configuration.</param>
+    /// <param name="key">The key of a value in the specified section.</param>
+    public void Remove(string section, string key)
     {
-        return Config.Contains(item);
+        Dict.Remove((section, key));
     }
 
-    /// <summary>
-    /// Adds an item to the configuration.
-    /// </summary>
-    /// <param name="item">The item to add to the configuration.</param>
-    /// <returns><c>Some(item)</c> of the added element.</returns>
-    public Option<SectionDictionary> Add(KeyValue<string, SectionDictionary> item)
+    private Option<string> Get(string section, string key)
     {
-        return Config.Add(item);
+        return Dict.TryGetValue((section, key), out var value) ? Some(value) : None;
     }
 
-    /// <summary>
-    /// Returns an enumerator that iterates through the configuration.
-    /// </summary>
-    /// <returns>A <c>Enumerator</c> structure for the configuration.</returns>
-    public IEnumerator<KeyValue<string, SectionDictionary>> GetEnumerator()
+    private void Set(string section, string key, Option<string> value)
     {
-        return Config.GetEnumerator();
+        value.Match(val => Add(section, key, val), () => Remove(section, key));
+    }
+
+    /// <inheritdoc />
+    public IEnumerator<(string Section, string Key, string Value)> GetEnumerator()
+    {
+        return Dict.Select(entry => (entry.Key.Section, entry.Key.Key, entry.Value)).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -172,12 +187,86 @@ public sealed partial class Ini(ConfigDictionary configDictionary) : IKeyValueCo
         return GetEnumerator();
     }
 
-    /// <summary>
-    /// Returns the string representation of this instance.
-    /// </summary>
-    /// <returns>The string representation of this instance.</returns>
+    /// <inheritdoc />
     public override string ToString()
     {
-        return Config.ToString();
+        using var enumerator = GetEnumerator();
+
+        var builder = new StringBuilder("ini [");
+
+        if (enumerator.MoveNext()) // 1
+        {
+            var (s, k, v) = enumerator.Current;
+
+            builder.Append(s);
+            builder.Append('.');
+            builder.Append(k);
+            builder.Append(" = ");
+            builder.Append(v);
+        }
+        else
+        {
+            builder.Append(']');
+            return builder.ToString();
+        }
+
+        if (enumerator.MoveNext()) // 2
+        {
+            var (s, k, v) = enumerator.Current;
+
+            builder.Append("; ");
+            builder.Append(s);
+            builder.Append('.');
+            builder.Append(k);
+            builder.Append(" = ");
+            builder.Append(v);
+        }
+        else
+        {
+            builder.Append(']');
+            return builder.ToString();
+        }
+
+        if (enumerator.MoveNext()) // 3
+        {
+            var (s, k, v) = enumerator.Current;
+
+            builder.Append("; ");
+            builder.Append(s);
+            builder.Append('.');
+            builder.Append(k);
+            builder.Append(" = ");
+            builder.Append(v);
+        }
+        else
+        {
+            builder.Append(']');
+            return builder.ToString();
+        }
+
+        if (enumerator.MoveNext()) // 4
+        {
+            builder.Append("; ...]");
+            return builder.ToString();
+        }
+
+        builder.Append(']');
+        return builder.ToString();
+    }
+
+    private class KeyComparer(IEqualityComparer<string> comparer) : IEqualityComparer<(string Section, string Key)>
+    {
+        public bool Equals((string Section, string Key) x, (string Section, string Key) y)
+        {
+            return comparer.Equals(x.Section, y.Section) && comparer.Equals(x.Key, y.Key);
+        }
+
+        public int GetHashCode((string Section, string Key) obj)
+        {
+            unchecked
+            {
+                return (comparer.GetHashCode(obj.Section) * 397) ^ comparer.GetHashCode(obj.Key);
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using Functional;
 
 namespace Configuration.Tests;
@@ -198,6 +199,21 @@ public sealed class IniTests
         var ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
 
         using var enumerator = ini.GetEnumerator();
+
+        Assert.True(enumerator.MoveNext());
+        Assert.Equal(("a", "b", "c"), enumerator.Current);
+        Assert.True(enumerator.MoveNext());
+        Assert.Equal(("d", "e", "f"), enumerator.Current);
+        Assert.False(enumerator.MoveNext());
+    }
+
+    [Fact]
+    public void GetEnumerator_IEnumerable_Test()
+    {
+        IEnumerable ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
+        
+        var enumerator = ini.GetEnumerator();
+        using var disposable = enumerator as IDisposable;
 
         Assert.True(enumerator.MoveNext());
         Assert.Equal(("a", "b", "c"), enumerator.Current);

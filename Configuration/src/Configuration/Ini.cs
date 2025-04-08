@@ -6,9 +6,10 @@ namespace Configuration;
 /// <summary>
 /// Represents an INI configuration.
 /// </summary>
-public sealed partial class Ini : IEnumerable<(string Section, string Key, string Value)>
+[System.Diagnostics.DebuggerDisplay("Count = {Count}")]
+public sealed class Ini : IEnumerable<(string Section, string Key, string Value)>
 {
-    private const string Global = "";
+    internal const string Global = "";
 
     /// <summary>
     /// The empty configuration.

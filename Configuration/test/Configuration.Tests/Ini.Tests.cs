@@ -124,6 +124,51 @@ public sealed class IniTests
     }
 
     [Fact]
+    public void GetEnumerator_Test()
+    {
+        var ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
+
+        using var enumerator = ini.GetEnumerator();
+
+        Assert.True(enumerator.MoveNext());
+        Assert.Equal(("a", "b", "c"), enumerator.Current);
+        Assert.True(enumerator.MoveNext());
+        Assert.Equal(("d", "e", "f"), enumerator.Current);
+        Assert.False(enumerator.MoveNext());
+    }
+
+    [Fact]
+    public void GetEnumerator_IEnumerable_Test()
+    {
+        IEnumerable ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
+        
+        var enumerator = ini.GetEnumerator();
+        using var disposable = enumerator as IDisposable;
+
+        Assert.True(enumerator.MoveNext());
+        Assert.Equal(("a", "b", "c"), enumerator.Current);
+        Assert.True(enumerator.MoveNext());
+        Assert.Equal(("d", "e", "f"), enumerator.Current);
+        Assert.False(enumerator.MoveNext());
+    }
+
+    [Fact]
+    public void ToString_Test()
+    {
+        var empty = Ini.Empty.ToString();
+        var one = new Ini([("a", "b", "c")]).ToString();
+        var two = new Ini([("a", "b", "c"), ("d", "e", "f")]).ToString();
+        var three = new Ini([("a", "b", "c"), ("d", "e", "f"), ("g", "h", "i")]).ToString();
+        var four = new Ini([("a", "b", "c"), ("d", "e", "f"), ("g", "h", "i"), ("j", "k", "l")]).ToString();
+        
+        Assert.Equal("ini []", empty);
+        Assert.Equal("ini [a.b = c]", one);
+        Assert.Equal("ini [a.b = c; d.e = f]", two);
+        Assert.Equal("ini [a.b = c; d.e = f; g.h = i]", three);
+        Assert.Equal("ini [a.b = c; d.e = f; g.h = i; ...]", four);
+    }
+
+    [Fact]
     public void IsClear_Test()
     {
         var ini = new Ini([("a", "b", "c")]);
@@ -191,50 +236,5 @@ public sealed class IniTests
 
         Assert.False(ini.Contains("a", "b"));
         Assert.True(ini.Contains("d", "e"));
-    }
-
-    [Fact]
-    public void GetEnumerator_Test()
-    {
-        var ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
-
-        using var enumerator = ini.GetEnumerator();
-
-        Assert.True(enumerator.MoveNext());
-        Assert.Equal(("a", "b", "c"), enumerator.Current);
-        Assert.True(enumerator.MoveNext());
-        Assert.Equal(("d", "e", "f"), enumerator.Current);
-        Assert.False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public void GetEnumerator_IEnumerable_Test()
-    {
-        IEnumerable ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
-        
-        var enumerator = ini.GetEnumerator();
-        using var disposable = enumerator as IDisposable;
-
-        Assert.True(enumerator.MoveNext());
-        Assert.Equal(("a", "b", "c"), enumerator.Current);
-        Assert.True(enumerator.MoveNext());
-        Assert.Equal(("d", "e", "f"), enumerator.Current);
-        Assert.False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public void ToString_Test()
-    {
-        var empty = Ini.Empty.ToString();
-        var one = new Ini([("a", "b", "c")]).ToString();
-        var two = new Ini([("a", "b", "c"), ("d", "e", "f")]).ToString();
-        var three = new Ini([("a", "b", "c"), ("d", "e", "f"), ("g", "h", "i")]).ToString();
-        var four = new Ini([("a", "b", "c"), ("d", "e", "f"), ("g", "h", "i"), ("j", "k", "l")]).ToString();
-        
-        Assert.Equal("ini []", empty);
-        Assert.Equal("ini [a.b = c]", one);
-        Assert.Equal("ini [a.b = c; d.e = f]", two);
-        Assert.Equal("ini [a.b = c; d.e = f; g.h = i]", three);
-        Assert.Equal("ini [a.b = c; d.e = f; g.h = i; ...]", four);
     }
 }

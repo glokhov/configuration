@@ -50,13 +50,23 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// </param>
     public Ini(IEnumerable<(string Section, string Key, string Value)> elements, IEqualityComparer<string> comparer)
     {
-        Dict = elements.ToDictionary(item => (item.Section, item.Key), item => item.Value, new KeyComparer(comparer));
         Comparer = comparer;
+        Dict = elements.ToDictionary(item => (item.Section, item.Key), item => item.Value, new KeyComparer(comparer));
     }
+
+    internal IEqualityComparer<string> Comparer { get; }
 
     internal Dictionary<(string Section, string Key), string> Dict { get; }
 
-    internal IEqualityComparer<string> Comparer { get; }
+    /// <summary>
+    /// Gets whether the configuration is empty.
+    /// </summary>
+    public bool IsEmpty => Count == 0;
+
+    /// <summary>
+    /// The number of values in the configuration.
+    /// </summary>
+    public int Count => Dict.Count;
 
     /// <summary>
     /// Gets or sets the value associated with the specified key.
@@ -92,16 +102,6 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     }
 
     /// <summary>
-    /// Gets whether the configuration is empty.
-    /// </summary>
-    public bool IsEmpty => Count == 0;
-
-    /// <summary>
-    /// The number of values in the configuration.
-    /// </summary>
-    public int Count => Dict.Count;
-
-    /// <summary>
     /// Removes all values from the configuration.
     /// </summary>
     public void Clear() => Dict.Clear();
@@ -111,10 +111,7 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// </summary>
     /// <param name="key">The key of a value in the global section.</param>
     /// <returns>true if a value is found in the configuration; otherwise, false.</returns>
-    public bool Contains(string key)
-    {
-        return Contains(Global, key);
-    }
+    public bool Contains(string key) => Contains(Global, key);
 
     /// <summary>
     /// Determines whether the configuration contains a specific value.
@@ -122,20 +119,14 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// <param name="section">The name of a section in the configuration.</param>
     /// <param name="key">The key of a value in the specified section.</param>
     /// <returns>true if a value is found in the configuration; otherwise, false.</returns>
-    public bool Contains(string section, string key)
-    {
-        return Dict.ContainsKey((section, key));
-    }
+    public bool Contains(string section, string key) => Dict.ContainsKey((section, key));
 
     /// <summary>
     /// Adds a value to the configuration.
     /// </summary>
     /// <param name="key">The key of a value in the global section.</param>
     /// <param name="value">The value to add.</param>
-    public void Add(string key, string value)
-    {
-        Add(Global, key, value);
-    }
+    public void Add(string key, string value) => Add(Global, key, value);
 
     /// <summary>
     /// Adds a value to the configuration.
@@ -143,29 +134,20 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// <param name="section">The name of a section in the configuration.</param>
     /// <param name="key">The key of a value in the specified section.</param>
     /// <param name="value">The value to add.</param>
-    public void Add(string section, string key, string value)
-    {
-        Dict[(section, key)] = value;
-    }
+    public void Add(string section, string key, string value) => Dict[(section, key)] = value;
 
     /// <summary>
     /// Removes a value from the configuration.
     /// </summary>
     /// <param name="key">The key of a value in the global section.</param>
-    public void Remove(string key)
-    {
-        Remove(Global, key);
-    }
+    public void Remove(string key) => Remove(Global, key);
 
     /// <summary>
     /// Removes a value from the configuration.
     /// </summary>
     /// <param name="section">The name of a section in the configuration.</param>
     /// <param name="key">The key of a value in the specified section.</param>
-    public void Remove(string section, string key)
-    {
-        Dict.Remove((section, key));
-    }
+    public void Remove(string section, string key) => Dict.Remove((section, key));
 
     private Option<string> Get(string section, string key)
     {

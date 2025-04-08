@@ -1,3 +1,5 @@
+#if NETSTANDARD
+
 #pragma warning disable
 
 using System.Diagnostics;
@@ -9,3 +11,5 @@ namespace System.Runtime.CompilerServices;
 internal static class IsExternalInit;
 
 #pragma warning restore
+
+#endif

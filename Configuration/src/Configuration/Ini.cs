@@ -11,10 +11,108 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
 {
     internal const string Global = "";
 
+    #region Static
+
     /// <summary>
     /// The empty configuration.
     /// </summary>
     public static Ini Empty => [];
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a file.
+    /// </summary>
+    /// <param name="path">The full name of a configuration file.</param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromFile(string path)
+    {
+        return Empty.AppendFromFile(path);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a file.
+    /// </summary>
+    /// <param name="path">The full name of a configuration file.</param>
+    /// <param name="comparer">
+    /// The IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// </param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromFile(string path, IEqualityComparer<string> comparer)
+    {
+        return new Ini(comparer).AppendFromFile(path);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a file.
+    /// </summary>
+    /// <param name="file">The <c>FileInfo</c> of a configuration file.</param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromFile(FileInfo file)
+    {
+        return Empty.AppendFromFile(file);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a file.
+    /// </summary>
+    /// <param name="file">The <c>FileInfo</c> of a configuration file.</param>
+    /// <param name="comparer">
+    /// The IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// </param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromFile(FileInfo file, IEqualityComparer<string> comparer)
+    {
+        return new Ini(comparer).AppendFromFile(file);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a string.
+    /// </summary>
+    /// <param name="text">The string representation of a configuration file.</param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromString(string text)
+    {
+        return Empty.AppendFromString(text);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a string.
+    /// </summary>
+    /// <param name="text">The string representation of a configuration file.</param>
+    /// <param name="comparer">
+    /// The IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// </param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromString(string text, IEqualityComparer<string> comparer)
+    {
+        return new Ini(comparer).AppendFromString(text);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a <c>TextReader</c>.
+    /// </summary>
+    /// <param name="reader">The <c>TextReader</c> of a configuration file.</param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromReader(TextReader reader)
+    {
+        return Empty.AppendFromReader(reader);
+    }
+
+    /// <summary>
+    /// Initializes new <c>Ini</c> from a <c>TextReader</c>.
+    /// </summary>
+    /// <param name="reader">The <c>TextReader</c> of a configuration file.</param>
+    /// <param name="comparer">
+    /// The IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// </param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> FromReader(TextReader reader, IEqualityComparer<string> comparer)
+    {
+        return new Ini(comparer).AppendFromReader(reader);
+    }
+
+    #endregion
+
+    #region Ctor
 
     /// <summary>
     /// Initializes a new instance of the <c>Ini</c> class.
@@ -50,13 +148,19 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// </param>
     public Ini(IEnumerable<(string Section, string Key, string Value)> elements, IEqualityComparer<string> comparer)
     {
-        Comparer = comparer;
-        Dict = elements.ToDictionary(item => (item.Section, item.Key), item => item.Value, new KeyComparer(comparer));
+        Dict = elements.ToDictionary(item => (item.Section, item.Key), item => item.Value, new KeyComparer(Comparer = comparer));
     }
 
-    internal IEqualityComparer<string> Comparer { get; }
-
     internal Dictionary<(string Section, string Key), string> Dict { get; }
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>
+    /// Gets the IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.
+    /// </summary>
+    public IEqualityComparer<string> Comparer { get; }
 
     /// <summary>
     /// Gets whether the configuration is empty.
@@ -80,12 +184,12 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// </remarks>
     public Option<string> this[string key]
     {
-        get => this[Global, key];
-        set => this[Global, key] = value;
+        get => this.Get(key);
+        set => this.Set(key, value);
     }
 
     /// <summary>
-    /// Gets or sets the value associated with the specified key.
+    /// Gets or sets the value associated with the specified section name and key.
     /// </summary>
     /// <param name="section">The name of a section in the configuration.</param>
     /// <param name="key">The key of a value in the specified section.</param>
@@ -97,67 +201,13 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// </remarks>
     public Option<string> this[string section, string key]
     {
-        get => Get(section, key);
-        set => Set(section, key, value);
+        get => this.Get(section, key);
+        set => this.Set(section, key, value);
     }
 
-    /// <summary>
-    /// Removes all values from the configuration.
-    /// </summary>
-    public void Clear() => Dict.Clear();
+    #endregion
 
-    /// <summary>
-    /// Determines whether the configuration contains a specific value.
-    /// </summary>
-    /// <param name="key">The key of a value in the global section.</param>
-    /// <returns>true if a value is found in the configuration; otherwise, false.</returns>
-    public bool Contains(string key) => Contains(Global, key);
-
-    /// <summary>
-    /// Determines whether the configuration contains a specific value.
-    /// </summary>
-    /// <param name="section">The name of a section in the configuration.</param>
-    /// <param name="key">The key of a value in the specified section.</param>
-    /// <returns>true if a value is found in the configuration; otherwise, false.</returns>
-    public bool Contains(string section, string key) => Dict.ContainsKey((section, key));
-
-    /// <summary>
-    /// Adds a value to the configuration.
-    /// </summary>
-    /// <param name="key">The key of a value in the global section.</param>
-    /// <param name="value">The value to add.</param>
-    public void Add(string key, string value) => Add(Global, key, value);
-
-    /// <summary>
-    /// Adds a value to the configuration.
-    /// </summary>
-    /// <param name="section">The name of a section in the configuration.</param>
-    /// <param name="key">The key of a value in the specified section.</param>
-    /// <param name="value">The value to add.</param>
-    public void Add(string section, string key, string value) => Dict[(section, key)] = value;
-
-    /// <summary>
-    /// Removes a value from the configuration.
-    /// </summary>
-    /// <param name="key">The key of a value in the global section.</param>
-    public void Remove(string key) => Remove(Global, key);
-
-    /// <summary>
-    /// Removes a value from the configuration.
-    /// </summary>
-    /// <param name="section">The name of a section in the configuration.</param>
-    /// <param name="key">The key of a value in the specified section.</param>
-    public void Remove(string section, string key) => Dict.Remove((section, key));
-
-    private Option<string> Get(string section, string key)
-    {
-        return Dict.TryGetValue((section, key), out var value) ? Some(value) : None;
-    }
-
-    private void Set(string section, string key, Option<string> value)
-    {
-        value.Match(val => Add(section, key, val), () => Remove(section, key));
-    }
+    #region IEnumerable
 
     /// <inheritdoc />
     public IEnumerator<(string Section, string Key, string Value)> GetEnumerator()
@@ -169,6 +219,10 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     {
         return GetEnumerator();
     }
+
+    #endregion
+
+    #region ToString
 
     /// <inheritdoc />
     public override string ToString()
@@ -237,6 +291,10 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
         return builder.ToString();
     }
 
+    #endregion
+
+    #region IEqualityComparer
+
     private class KeyComparer(IEqualityComparer<string> comparer) : IEqualityComparer<(string Section, string Key)>
     {
         public bool Equals((string Section, string Key) x, (string Section, string Key) y)
@@ -252,4 +310,6 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
             }
         }
     }
+
+    #endregion
 }

@@ -23,7 +23,7 @@ public sealed class ReaderTests : IDisposable
     [Fact]
     public void FromFile_Path()
     {
-        var ini = Prelude.FromFile(_tempFile).Unwrap();
+        var ini = Ini.FromFile(_tempFile).Unwrap();
 
         Assert.Equal("b", ini["A"].Unwrap());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -33,7 +33,7 @@ public sealed class ReaderTests : IDisposable
     [Fact]
     public void FromFile_FileInfo()
     {
-        var ini = Prelude.FromFile(new FileInfo(_tempFile)).Unwrap();
+        var ini = Ini.FromFile(new FileInfo(_tempFile)).Unwrap();
 
         Assert.Equal("b", ini["A"].Unwrap());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -45,7 +45,7 @@ public sealed class ReaderTests : IDisposable
     {
         var text = File.ReadAllText(_tempFile);
 
-        var ini = Prelude.FromString(text).Unwrap();
+        var ini = Ini.FromString(text).Unwrap();
 
         Assert.Equal("b", ini["A"].Unwrap());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -57,7 +57,7 @@ public sealed class ReaderTests : IDisposable
     {
         using var reader = new FileInfo(_tempFile).OpenText();
 
-        var ini = Prelude.FromReader(reader).Unwrap();
+        var ini = Ini.FromReader(reader).Unwrap();
 
         Assert.Equal("b", ini["A"].Unwrap());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -69,7 +69,7 @@ public sealed class ReaderTests : IDisposable
     [Fact]
     public void FromFile_Path_Comparer()
     {
-        var ini = Prelude.FromFile(_tempFile, EqualityComparer<string>.Default).Unwrap();
+        var ini = Ini.FromFile(_tempFile, EqualityComparer<string>.Default).Unwrap();
 
         Assert.Equal(Unit.Default, ini["A"].ExpectUnit());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -79,7 +79,7 @@ public sealed class ReaderTests : IDisposable
     [Fact]
     public void FromFile_FileInfo_Comparer()
     {
-        var ini = Prelude.FromFile(new FileInfo(_tempFile), EqualityComparer<string>.Default).Unwrap();
+        var ini = Ini.FromFile(new FileInfo(_tempFile), EqualityComparer<string>.Default).Unwrap();
 
         Assert.Equal(Unit.Default, ini["A"].ExpectUnit());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -91,7 +91,7 @@ public sealed class ReaderTests : IDisposable
     {
         var text = File.ReadAllText(_tempFile);
 
-        var ini = Prelude.FromString(text, EqualityComparer<string>.Default).Unwrap();
+        var ini = Ini.FromString(text, EqualityComparer<string>.Default).Unwrap();
 
         Assert.Equal(Unit.Default, ini["A"].ExpectUnit());
         Assert.Equal("d", ini["foo", "c"].Unwrap());
@@ -103,7 +103,7 @@ public sealed class ReaderTests : IDisposable
     {
         using var reader = new FileInfo(_tempFile).OpenText();
 
-        var ini = Prelude.FromReader(reader, EqualityComparer<string>.Default).Unwrap();
+        var ini = Ini.FromReader(reader, EqualityComparer<string>.Default).Unwrap();
 
         Assert.Equal(Unit.Default, ini["A"].ExpectUnit());
         Assert.Equal("d", ini["foo", "c"].Unwrap());

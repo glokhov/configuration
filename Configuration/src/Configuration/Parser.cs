@@ -26,7 +26,11 @@ internal static class Parser
             return None;
         }
 
+#if NETSTANDARD2_0
         return Some(match.Groups.Cast<Group>().Select(group => group.Value).ToArray());
+#else
+        return Some(match.Groups.Select(group => group.Value).ToArray());
+#endif
     }
 
     private static Option<string> ParseSection(string text)
@@ -51,11 +55,12 @@ internal static class Parser
 
     public static Result<Line, string> ParseLine(string text)
     {
-        return ParseSection(text)
-            .Match(name => Option<Line>.Some(new Section(name)), () => ParseParameter(text)
-                .Match(param => Option<Line>.Some(new Parameter(param.Item1, param.Item2)), () => ParseComment(text)
-                    .Match(comm => Option<Line>.Some(new Comment(comm)), () => ParseEmptySpace(text)
-                        .Match(_ => Option<Line>.Some(new Line()), Option<Line>.None))))
-            .ToResult(() => "Cannot parse line '" + text + "'");
+        return
+            ParseSection(text)
+                .Match(name => Option<Line>.Some(new Section(name)), () => ParseParameter(text)
+                    .Match(param => Option<Line>.Some(new Parameter(param.Item1, param.Item2)), () => ParseComment(text)
+                        .Match(comm => Option<Line>.Some(new Comment(comm)), () => ParseEmptySpace(text)
+                            .Match(_ => Option<Line>.Some(new Line()), Option<Line>.None))))
+                .ToResult(() => "Cannot parse line '" + text + "'");
     }
 }

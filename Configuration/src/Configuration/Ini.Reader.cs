@@ -45,6 +45,25 @@ public static class Reader
     }
 
     /// <summary>
+    /// Appends elements to the existing <c>Ini</c> configuration from a string.
+    /// </summary>
+    /// <param name="ini">The existing <c>Ini</c> configuration.</param>
+    /// <param name="text">The string representation of a configuration file.</param>
+    /// <returns><c>Ok(Ini)</c> if successful; otherwise, <c>Err(string)</c>.</returns>
+    public static Result<Ini, string> AppendFromString(this Ini ini, string text)
+    {
+        try
+        {
+            using var reader = new StringReader(text);
+            return ini.AppendFromReader(reader);
+        }
+        catch (Exception e)
+        {
+            return Err(e.Message);
+        }
+    }
+
+    /// <summary>
     /// Appends elements to the existing <c>Ini</c> configuration from a <c>TextReader</c>.
     /// </summary>
     /// <param name="ini">The existing <c>Ini</c> configuration.</param>

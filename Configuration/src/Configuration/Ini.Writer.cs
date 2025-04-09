@@ -55,7 +55,9 @@ public static class Writer
             var current = Ini.Global;
             var fist = true;
 
-            foreach (var (section, key, value) in ini)
+            var elements = ini.GroupBy(element => element.Section).SelectMany(grouping => grouping);
+
+            foreach (var (section, key, value) in elements)
             {
                 if (current != section)
                 {

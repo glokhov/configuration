@@ -1,20 +1,6 @@
 # INI configuration file [![Nuget Version](https://img.shields.io/nuget/v/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini) [![Nuget Download](https://img.shields.io/nuget/dt/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini)
 Simple INI parser and writer.
 ## Getting started
-Use ```global using``` directive for the whole project:
-```csharp
-global using Functional;
-global using Configuration;
-global using static Functional.Prelude;
-global using static Configuration.Prelude;
-```
-Or ```using``` directive in the single file: 
-```csharp
-using Functional;
-using Configuration;
-using static Functional.Prelude;
-using static Configuration.Prelude;
-```
 Initial Configuration.ini content:
 ```ini
 # GlobalSection
@@ -38,107 +24,86 @@ KeyThree = SectionTwo_ValueThree
 KeyOne = SectionThree_ValueOne
 KeyTwo = SectionThree_ValueTwo
 ```
-Call ```Ini``` function. Pass the ```IEqualityComparer<string>``` that will be used to determine equality of keys in the configuration:
+Import ```Functional``` namespace:
 ```csharp
-Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"));
-Result<Ini, string> result = Ini(new FileInfo("Configuration.ini"), StringComparer.OrdinalIgnoreCase);
+global using Functional;
+global using static Functional.Prelude;
 ```
-Use ```Match()``` function to extract the configuration:
+Import ```Configuration``` namespace:
 ```csharp
-Ini ini = result.Match(ini => ini, err => throw new ApplicationException(err));
+using Configuration;
 ```
-Use ```Item[key]``` property to get or set a global section value:
+Function ```Ini.FromFile(path)``` initializes new ```Ini``` configuration from a file:
 ```csharp
-Option<string> globalOne = ini["KeyOne"];
-Option<string> globalTwo = ini["KeyTwo"];
-Option<string> globalThree = ini["KeyThree"];
+var ini = Ini.FromFile(_tempFile).Unwrap();
+```
+Property ```Item[key]``` gets the ```Option``` value associated with the specified key:
+```csharp
+var globalOne = ini["KeyOne"];
+var globalTwo = ini["KeyTwo"];
+var globalThree = ini["KeyThree"];
 
-Assert.Equal("Some(GlobalSection_ValueOne)", globalOne.ToString());
-Assert.Equal("Some(GlobalSection_ValueTwo)", globalTwo.ToString());
-Assert.Equal("None", globalThree.ToString());
+Debug.Assert(globalOne == Some("GlobalSection_ValueOne"));
+Debug.Assert(globalTwo == Some("GlobalSection_ValueTwo"));
+Debug.Assert(globalThree == None);
 ```
-Use ```Item[section, key]``` property to get or set a value:
+Property ```IsSome``` returns ```true``` if the value exists; Property ```IsNone``` returns ```true``` if the value doesn't exist:
 ```csharp
-Option<string> oneOne = ini["section_one", "KeyOne"];
-Option<string> twoTwo = ini["section_two", "KeyTwo"];
-Option<string> threeThree = ini["section_three", "KeyThree"];
-
-Assert.Equal("Some(SectionOne_ValueOne)", oneOne.ToString());
-Assert.Equal("Some(SectionTwo_ValueTwo)", twoTwo.ToString());
-Assert.Equal("None", threeThree.ToString());
+Debug.Assert(globalOne.IsSome);
+Debug.Assert(globalTwo.IsSome);
+Debug.Assert(globalThree.IsNone);
 ```
-Use ```IsSome``` and ```IsNone``` properties to check, if the value exists:
+Property ```Item[section, key] ``` gets the ```Option``` value associated with the specified section name and key:
 ```csharp
-bool oneOneIsSome = oneOne.IsSome;
-bool threeThreeIsSome = threeThree.IsSome;
-bool threeThreeIsNone = threeThree.IsNone;
+var oneOne = ini["section_one", "KeyOne"];
+var twoTwo = ini["section_two", "KeyTwo"];
+var threeThree = ini["section_three", "KeyThree"];
 
-Assert.True(oneOneIsSome);
-Assert.False(threeThreeIsSome);
-Assert.True(threeThreeIsNone);
+Debug.Assert(oneOne == Some("SectionOne_ValueOne"));
+Debug.Assert(twoTwo == Some("SectionTwo_ValueTwo"));
+Debug.Assert(threeThree == None);
 ```
-Call ```Match()``` function to extract the value, if exists:
+Function ```Match(some, none)``` safely extracts the value:
 ```csharp
-string oneOneValue = oneOne.Match(some => some, "none");
-string threeThreeValue = threeThree.Match(some => some, "none");
+var oneOneValue = oneOne.Match(some => some, "none");
+var threeThreeValue = threeThree.Match(some => some, "none");
 
-Assert.Equal("SectionOne_ValueOne", oneOneValue);
-Assert.Equal("none", threeThreeValue);
+Debug.Assert(oneOneValue == "SectionOne_ValueOne");
+Debug.Assert(threeThreeValue == "none");
 ```
 Set ```Some(value)``` to change the value:
 ```csharp
 ini["section_one", "KeyOne"] = Some("SectionOne_ValueOne_Changed");
 
-Option<string> oneOneChanged = ini["section_one", "KeyOne"];
+var oneOneChanged = ini["section_one", "KeyOne"];
 
-string oneOneChangedValue = oneOneChanged.Match(some => some, "none");
+var oneOneChangedValue = oneOneChanged.Match(some => some, "none");
 
-Assert.Equal("SectionOne_ValueOne_Changed", oneOneChangedValue);
+Debug.Assert(oneOneChangedValue == "SectionOne_ValueOne_Changed");
 ```
-Set ```Some(value)``` to add new value:
+Set Some(value) to add a value:
 ```csharp
 ini["section_one", "KeyThree"] = Some("SectionOne_ValueThree_Added");
 
-Option<string> oneThreeAdded = ini["section_one", "KeyThree"];
+var oneThreeAdded = ini["section_one", "KeyThree"];
 
-string oneThreeAddedValue = oneThreeAdded.Match(some => some, "none");
+var oneThreeAddedValue = oneThreeAdded.Match(some => some, "none");
 
-Assert.Equal("SectionOne_ValueThree_Added", oneThreeAddedValue);
+Debug.Assert(oneThreeAddedValue == "SectionOne_ValueThree_Added");
 ```
 Set ```None``` to remove the value:
 ```csharp
 ini["section_two", "KeyThree"] = None;
 
-Option<string> twoThree = ini["section_two", "KeyThree"];
+var twoThree = ini["section_two", "KeyThree"];
 
-string twoThreeValue = twoThree.Match(some => some, "none");
+var twoThreeValue = twoThree.Match(some => some, "none");
 
-Assert.Equal("none", twoThreeValue);
+Debug.Assert(twoThreeValue == "none");
 ```
-Call ```GetSection``` function to get a section:
+Function ```ToFile(path)``` writes the <c>Ini</c> configuration to a file:
 ```csharp
-Option<SectionDictionary> one = ini.GetSection("section_one");
-Option<SectionDictionary> four = ini.GetSection("section_four");
-
-bool oneIsSome = one.IsSome;
-bool fourIsNone = four.IsNone;
-
-Assert.True(oneIsSome);
-Assert.True(fourIsNone);
-```
-Call ```SetSection``` function and pass ```None``` to remove the section:
-```csharp
-ini.SetSection("section_three", None);
-
-Option<SectionDictionary> three = ini.GetSection("section_three");
-
-bool threeIsNone = three.IsNone;
-
-Assert.True(threeIsNone);
-```
-Write configuration to the file:
-```csharp
-ini.WriteTo(new FileInfo("Configuration.ini"));
+ini.ToFile(_tempFile);
 ```
 Final Configuration.ini content:
 ```ini
@@ -157,4 +122,4 @@ KeyOne = SectionTwo_ValueOne
 KeyTwo = SectionTwo_ValueTwo
 ```
 ### Sample
-See [GettingStarted](https://github.com/glokhov/configuration/blob/main/Configuration/test/ConfigurationTests/ReadMeTests.cs) test.
+See [GettingStarted](https://github.com/glokhov/configuration/blob/main/Configuration/test/Configuration.Tests/README.Tests.cs) test.

@@ -26,10 +26,10 @@ internal static class Parser
             return None;
         }
 
-#if NETSTANDARD2_0
-        return Some(match.Groups.Cast<Group>().Select(group => group.Value).ToArray());
-#else
+#if NETSTANDARD2_1
         return Some(match.Groups.Select(group => group.Value).ToArray());
+#else
+        return Some(match.Groups.Cast<Group>().Select(group => group.Value).ToArray());
 #endif
     }
 

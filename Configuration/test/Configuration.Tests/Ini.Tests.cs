@@ -14,7 +14,11 @@ public sealed class IniTests
 
         Assert.True(ini.IsEmpty);
         Assert.Equal(0, ini.Count);
+#if NET48
+        Assert.Equal("OrdinalComparer", ini.Comparer.GetType().Name);
+#else
         Assert.Equal("OrdinalIgnoreCaseComparer", ini.Comparer.GetType().Name);
+#endif
     }
 
     [Fact]
@@ -24,7 +28,11 @@ public sealed class IniTests
 
         Assert.True(ini.IsEmpty);
         Assert.Equal(0, ini.Count);
+#if NET48
+        Assert.Equal("OrdinalComparer", ini.Comparer.GetType().Name);
+#else
         Assert.Equal("OrdinalIgnoreCaseComparer", ini.Comparer.GetType().Name);
+#endif
     }
 
     [Fact]
@@ -34,7 +42,11 @@ public sealed class IniTests
 
         Assert.True(ini.IsEmpty);
         Assert.Equal(0, ini.Count);
+#if NET48
+        Assert.Equal("GenericEqualityComparer`1", ini.Comparer.GetType().Name);
+#else
         Assert.Equal("StringEqualityComparer", ini.Comparer.GetType().Name);
+#endif
     }
 
     [Fact]
@@ -44,7 +56,11 @@ public sealed class IniTests
 
         Assert.False(ini.IsEmpty);
         Assert.Equal(1, ini.Count);
+#if NET48
+        Assert.Equal("OrdinalComparer", ini.Comparer.GetType().Name);
+#else
         Assert.Equal("OrdinalIgnoreCaseComparer", ini.Comparer.GetType().Name);
+#endif
 
         Assert.True(ini["a", "b"].IsSome);
         Assert.True(ini["A", "B"].IsSome);
@@ -57,7 +73,11 @@ public sealed class IniTests
 
         Assert.False(ini.IsEmpty);
         Assert.Equal(2, ini.Count);
+#if NET48
+        Assert.Equal("GenericEqualityComparer`1", ini.Comparer.GetType().Name);
+#else
         Assert.Equal("StringEqualityComparer", ini.Comparer.GetType().Name);
+#endif
 
         Assert.True(ini["a", "b"].IsSome);
         Assert.True(ini["A", "B"].IsNone);
@@ -141,7 +161,7 @@ public sealed class IniTests
     public void GetEnumerator_IEnumerable()
     {
         IEnumerable ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
-        
+
         var enumerator = ini.GetEnumerator();
         using var disposable = enumerator as IDisposable;
 

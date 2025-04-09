@@ -1,7 +1,7 @@
 # INI configuration file [![Nuget Version](https://img.shields.io/nuget/v/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini) [![Nuget Download](https://img.shields.io/nuget/dt/Configuration.Ini)](https://www.nuget.org/packages/Configuration.Ini)
 Simple INI parser and writer.
 ## Getting started
-Initial Configuration.ini content:
+Initial ```config.ini``` content:
 ```ini
 # GlobalSection
 
@@ -101,11 +101,11 @@ var twoThreeValue = twoThree.Match(some => some, "none");
 
 Debug.Assert(twoThreeValue == "none");
 ```
-Function ```ToFile(path)``` writes the <c>Ini</c> configuration to a file:
+Function ```ToFile(path)``` writes the ```Ini``` configuration to a file:
 ```csharp
 ini.ToFile("config.ini");
 ```
-Final Configuration.ini content:
+Final ```config.ini``` content:
 ```ini
 KeyOne = GlobalSection_ValueOne
 KeyTwo = GlobalSection_ValueTwo

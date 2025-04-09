@@ -1,3 +1,5 @@
+using Functional;
+
 namespace Configuration.Tests;
 
 public sealed class ExtensionsTests
@@ -28,6 +30,32 @@ public sealed class ExtensionsTests
 
         Assert.True(ini.Contains("a", "b"));
         Assert.False(ini.Contains("b", "c"));
+    }
+
+    [Fact]
+    public void GetNested_Test()
+    {
+        var ini = new Ini([
+            ("", "a", "a"),
+            (".b", "b", "b"),
+            (".b.c", "c", "c")
+        ]);
+
+        var aa = ini.Get(Ini.Global, "a").Unwrap();
+        var ba = ini.Get(".b", "a").Unwrap();
+        var bb = ini.Get(".b", "b").Unwrap();
+        var ca = ini.Get(".b.c", "a").Unwrap();
+        var cb = ini.Get(".b.c", "b").Unwrap();
+        var cc = ini.Get(".b.c", "c").Unwrap();
+        var bc = ini.Get(".b", "c").ExpectUnit();
+
+        Assert.Equal("a", aa);
+        Assert.Equal("a", ba);
+        Assert.Equal("b", bb);
+        Assert.Equal("a", ca);
+        Assert.Equal("b", cb);
+        Assert.Equal("c", cc);
+        Assert.Equal(Unit.Default, bc);
     }
 
     [Fact]

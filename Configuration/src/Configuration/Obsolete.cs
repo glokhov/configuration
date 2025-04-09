@@ -8,7 +8,7 @@ public static class IniExtensions
     /// <summary>
     /// Writes the text representing of an ini configuration to the file.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.ToFile(FileInfo) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.ToFile(fileInfo) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Unit, string> WriteTo(this Ini ini, FileInfo fileInfo)
     {
@@ -18,7 +18,7 @@ public static class IniExtensions
     /// <summary>
     /// Writes the text representing of an ini configuration to the text stream.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.ToWriter(TextWriter) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.ToWriter(textWriter) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Unit, string> WriteTo(this Ini ini, TextWriter textWriter)
     {
@@ -34,7 +34,7 @@ public static class Prelude
     /// <summary>
     /// Initializes new <c>Ini</c> from a file.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.FromFile(FileInfo) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.FromFile(fileInfo) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Ini, string> Ini(FileInfo fileInfo)
     {
@@ -44,7 +44,7 @@ public static class Prelude
     /// <summary>
     /// Initializes new <c>Ini</c> from a file.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.FromFile(FileInfo, IEqualityComparer<string>) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.FromFile(fileInfo, comparer) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Ini, string> Ini(FileInfo fileInfo, IEqualityComparer<string> comparer)
     {
@@ -54,7 +54,7 @@ public static class Prelude
     /// <summary>
     /// Initializes new <c>Ini</c> from a <c>TextReader</c>.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.FromReader(TextReader) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.FromReader(textReader) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Ini, string> Ini(TextReader textReader)
     {
@@ -64,7 +64,7 @@ public static class Prelude
     /// <summary>
     /// Initializes new <c>Ini</c> from a <c>TextReader</c>.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.FromReader(TextReader, IEqualityComparer<string>) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.FromReader(textReader, comparer) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Ini, string> Ini(TextReader textReader, IEqualityComparer<string> comparer)
     {
@@ -74,7 +74,7 @@ public static class Prelude
     /// <summary>
     /// Initializes new <c>Ini</c> from a string.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.FromString(string) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.FromString(input) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Ini, string> Ini(string input)
     {
@@ -84,7 +84,7 @@ public static class Prelude
     /// <summary>
     /// Initializes new <c>Ini</c> from a string.
     /// </summary>
-    [Obsolete("Use Configuration.Ini.FromString(string, IEqualityComparer<string>) instead. This method will be removed in future versions.")]
+    [Obsolete("Use Configuration.Ini.FromString(input, comparer) instead. This method will be removed in future versions.")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static Result<Ini, string> Ini(string input, IEqualityComparer<string> comparer)
     {

@@ -34,18 +34,43 @@ public static class Extensions
     /// <param name="ini">The <c>Ini</c> configuration.</param>
     /// <param name="key">The key of a value in the specified section.</param>
     /// <returns><c>Some(value)</c> if a value is found in the configuration; otherwise, <c>None</c>.</returns>
-    public static Option<string> Get(this Ini ini, string key) => ini.Get(Ini.Global, key);
+    public static Option<string> Get(this Ini ini, string key) => ini.GetExact(Ini.Global, key);
+
+    private static Option<string> GetExact(this Ini ini, string section, string key)
+    {
+        return ini.Dict.TryGetValue((section, key), out var value) ? Some(value) : None;
+    }
 
     /// <summary>
     /// Gets the value associated with the specified section name and key.
     /// </summary>
+    /// <remarks>
+    /// Gets the value by looking in the specified section and its parent sections in the configuration.
+    /// </remarks>
     /// <param name="ini">The <c>Ini</c> configuration.</param>
     /// <param name="section">The name of a section in the configuration.</param>
     /// <param name="key">The key of a value in the specified section.</param>
     /// <returns><c>Some(value)</c> if a value is found in the configuration; otherwise, <c>None</c>.</returns>
-    public static Option<string> Get(this Ini ini, string section, string key)
+#pragma warning disable
+    public static Option<string> Get(this Ini ini, string section, string key) => ini.GetNested(section, key);
+#pragma warning enable
+
+    /// <summary>
+    /// Gets the value associated with the specified section name and key.
+    /// </summary>
+    [Obsolete("Use Configuration.Ini.Get(section, key) instead. This method will be removed in future versions.")]
+    public static Option<string> GetNested(this Ini ini, string section, string key)
     {
-        return ini.Dict.TryGetValue((section, key), out var value) ? Some(value) : None;
+        return NestedSections(section).Select(sec => ini.GetExact(sec, key)).FirstOrDefault(val => val.IsSome);
+    }
+
+    private static IEnumerable<string> NestedSections(string section)
+    {
+        int index;
+
+        yield return section;
+
+        while ((index = section.LastIndexOf('.')) >= 0) yield return section = section[..index];
     }
 
     /// <summary>

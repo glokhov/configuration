@@ -9,8 +9,6 @@ namespace Configuration;
 [System.Diagnostics.DebuggerDisplay("Count = {Count}")]
 public sealed class Ini : IEnumerable<(string Section, string Key, string Value)>
 {
-    internal const string Global = "";
-
     #region Static
 
     /// <summary>
@@ -156,6 +154,11 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     #endregion
 
     #region Properties
+
+    /// <summary>
+    /// Global section.
+    /// </summary>
+    public const string Global = "";
 
     /// <summary>
     /// Gets the IEqualityComparer&lt;string&gt; that is used to determine equality of section names and keys.

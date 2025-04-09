@@ -60,7 +60,7 @@ public sealed class ReadmeTests : IDisposable
 
         // Function ```Ini.FromFile(path)``` initializes new ```Ini``` configuration from a file:
 
-        var ini = Ini.FromFile(_tempFile).Unwrap();
+        var ini = Ini.FromFile(_tempFile).Match(ini => ini, err => throw new ApplicationException(err));
 
         // Property ```Item[key]``` gets the ```Option``` value associated with the specified key:
 
@@ -72,7 +72,7 @@ public sealed class ReadmeTests : IDisposable
         Debug.Assert(globalTwo == Some("GlobalSection_ValueTwo"));
         Debug.Assert(globalThree == None);
 
-        // Property ```IsSome``` returns ```true``` if the value exists; Property ```IsNone``` returns ```true``` if the value doesn't exist:
+        // Property ```IsSome``` returns ```true``` if the value exists; property ```IsNone``` returns ```true``` if the value doesn't exist:
 
         Debug.Assert(globalOne.IsSome);
         Debug.Assert(globalTwo.IsSome);
@@ -113,7 +113,7 @@ public sealed class ReadmeTests : IDisposable
         var oneThreeAdded = ini["section_one", "KeyThree"];
 
         var oneThreeAddedValue = oneThreeAdded.Match(some => some, "none");
-        
+
         Debug.Assert(oneThreeAddedValue == "SectionOne_ValueThree_Added");
 
         // Set ```None``` to remove the value:
@@ -126,7 +126,7 @@ public sealed class ReadmeTests : IDisposable
 
         Debug.Assert(twoThreeValue == "none");
 
-        // Function ```ToFile(path)``` writes the <c>Ini</c> configuration to a file:
+        // Function ```ToFile(path)``` writes the ```Ini``` configuration to a file:
 
         ini.ToFile(_tempFile);
 

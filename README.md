@@ -35,7 +35,7 @@ using Configuration;
 ```
 Function ```Ini.FromFile(path)``` initializes new ```Ini``` configuration from a file:
 ```csharp
-var ini = Ini.FromFile(_tempFile).Unwrap();
+var ini = Ini.FromFile("config.ini").Unwrap();
 ```
 Property ```Item[key]``` gets the ```Option``` value associated with the specified key:
 ```csharp
@@ -103,7 +103,7 @@ Debug.Assert(twoThreeValue == "none");
 ```
 Function ```ToFile(path)``` writes the <c>Ini</c> configuration to a file:
 ```csharp
-ini.ToFile(_tempFile);
+ini.ToFile("config.ini");
 ```
 Final Configuration.ini content:
 ```ini

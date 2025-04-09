@@ -111,7 +111,9 @@ public sealed class ExtensionsTests
     {
         var ini = new Ini([
             ("", "b", "c"),
-            ("d", "e", "f")
+            ("d", "e", "f"),
+            ("", "bb", "cc"),
+            ("d", "ee", "ff")
         ]);
 
         var sections = ini.GetSections();

@@ -17,7 +17,7 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Version>0.2.0</Version>
+        <Version>0.2.1</Version>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Functional.Monad" Version="0.3.0" />

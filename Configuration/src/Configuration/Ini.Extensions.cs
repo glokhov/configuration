@@ -132,7 +132,7 @@ public static class Extensions
     /// <returns>The collection of the section names.</returns>
     public static IEnumerable<string> GetSections(this Ini ini)
     {
-        return ini.Select(element => element.Section);
+        return ini.Select(element => element.Section).Distinct();
     }
 
     /// <summary>

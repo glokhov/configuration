@@ -53,7 +53,10 @@ public sealed class ExtensionsTests
     [Fact]
     public void Remove_Global_Test()
     {
-        var ini = new Ini([("", "b", "c"), ("", "e", "f")]);
+        var ini = new Ini([
+            ("", "b", "c"),
+            ("", "e", "f")
+        ]);
 
         ini.Remove("b");
 
@@ -64,7 +67,10 @@ public sealed class ExtensionsTests
     [Fact]
     public void Remove_Test()
     {
-        var ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
+        var ini = new Ini([
+            ("a", "b", "c"),
+            ("d", "e", "f")
+        ]);
 
         ini.Remove("a", "b");
 

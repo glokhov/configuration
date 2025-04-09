@@ -227,68 +227,11 @@ public sealed class Ini : IEnumerable<(string Section, string Key, string Value)
     /// <inheritdoc />
     public override string ToString()
     {
-        using var enumerator = GetEnumerator();
+        using var writer = new StringWriter();
 
-        var builder = new StringBuilder("ini [");
+        this.ToWriter(writer);
 
-        if (enumerator.MoveNext()) // 1
-        {
-            var (s, k, v) = enumerator.Current;
-
-            builder.Append(s);
-            builder.Append('.');
-            builder.Append(k);
-            builder.Append(" = ");
-            builder.Append(v);
-        }
-        else
-        {
-            builder.Append(']');
-            return builder.ToString();
-        }
-
-        if (enumerator.MoveNext()) // 2
-        {
-            var (s, k, v) = enumerator.Current;
-
-            builder.Append("; ");
-            builder.Append(s);
-            builder.Append('.');
-            builder.Append(k);
-            builder.Append(" = ");
-            builder.Append(v);
-        }
-        else
-        {
-            builder.Append(']');
-            return builder.ToString();
-        }
-
-        if (enumerator.MoveNext()) // 3
-        {
-            var (s, k, v) = enumerator.Current;
-
-            builder.Append("; ");
-            builder.Append(s);
-            builder.Append('.');
-            builder.Append(k);
-            builder.Append(" = ");
-            builder.Append(v);
-        }
-        else
-        {
-            builder.Append(']');
-            return builder.ToString();
-        }
-
-        if (enumerator.MoveNext()) // 4
-        {
-            builder.Append("; ...]");
-            return builder.ToString();
-        }
-
-        builder.Append(']');
-        return builder.ToString();
+        return writer.ToString();
     }
 
     #endregion

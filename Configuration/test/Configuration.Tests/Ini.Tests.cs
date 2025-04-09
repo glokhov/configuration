@@ -8,7 +8,7 @@ using Configuration;
 public sealed class IniTests
 {
     [Fact]
-    public void Empty_Test()
+    public void Property_Empty()
     {
         var ini = Ini.Empty;
 
@@ -18,7 +18,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Ctor_Default_Test()
+    public void Ctor_Default()
     {
         var ini = new Ini();
 
@@ -28,7 +28,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Ctor_Comparer_Test()
+    public void Ctor_Comparer()
     {
         var ini = new Ini(EqualityComparer<string>.Default);
 
@@ -38,7 +38,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Ctor_Elements_Test()
+    public void Ctor_Elements()
     {
         var ini = new Ini([("a", "b", "c")]);
 
@@ -51,7 +51,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Ctor_Elements_Comparer_Test()
+    public void Ctor_Elements_Comparer()
     {
         var ini = new Ini([("a", "b", "c"), ("d", "e", "f")], EqualityComparer<string>.Default);
 
@@ -64,7 +64,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Indexer_Global_Get_Test()
+    public void Indexer_Global_Get()
     {
         var ini = new Ini([("", "b", "c")]);
 
@@ -73,7 +73,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Indexer_Get_Test()
+    public void Indexer_Get()
     {
         var ini = new Ini([("a", "b", "c")]);
 
@@ -82,7 +82,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Indexer_Global_Add_Test()
+    public void Indexer_Global_Add()
     {
         var ini = Ini.Empty;
 
@@ -92,7 +92,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Indexer_Add_Test()
+    public void Indexer_Add()
     {
         var ini = Ini.Empty;
 
@@ -102,7 +102,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Indexer_Global_Remove_Test()
+    public void Indexer_Global_Remove()
     {
         var ini = new Ini([("", "b", "c"), ("", "e", "f")]);
 
@@ -113,7 +113,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void Indexer_Remove_Test()
+    public void Indexer_Remove()
     {
         var ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
 
@@ -124,7 +124,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void GetEnumerator_Test()
+    public void GetEnumerator()
     {
         var ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
 
@@ -138,7 +138,7 @@ public sealed class IniTests
     }
 
     [Fact]
-    public void GetEnumerator_IEnumerable_Test()
+    public void GetEnumerator_IEnumerable()
     {
         IEnumerable ini = new Ini([("a", "b", "c"), ("d", "e", "f")]);
         
@@ -150,21 +150,5 @@ public sealed class IniTests
         Assert.True(enumerator.MoveNext());
         Assert.Equal(("d", "e", "f"), enumerator.Current);
         Assert.False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public void ToString_Test()
-    {
-        var empty = Ini.Empty.ToString();
-        var one = new Ini([("a", "b", "c")]).ToString();
-        var two = new Ini([("a", "b", "c"), ("d", "e", "f")]).ToString();
-        var three = new Ini([("a", "b", "c"), ("d", "e", "f"), ("g", "h", "i")]).ToString();
-        var four = new Ini([("a", "b", "c"), ("d", "e", "f"), ("g", "h", "i"), ("j", "k", "l")]).ToString();
-        
-        Assert.Equal("ini []", empty);
-        Assert.Equal("ini [a.b = c]", one);
-        Assert.Equal("ini [a.b = c; d.e = f]", two);
-        Assert.Equal("ini [a.b = c; d.e = f; g.h = i]", three);
-        Assert.Equal("ini [a.b = c; d.e = f; g.h = i; ...]", four);
     }
 }

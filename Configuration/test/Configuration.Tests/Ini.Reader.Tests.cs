@@ -18,7 +18,7 @@ public sealed class ReaderTests : IDisposable
         File.Delete(_tempFile);
     }
 
-    // prelude
+    // extensions
 
     [Fact]
     public void FromFile_Path()

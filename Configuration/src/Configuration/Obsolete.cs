@@ -3,6 +3,32 @@ namespace Configuration;
 /// <summary>
 /// Static methods.
 /// </summary>
+public static class IniExtensions
+{
+    /// <summary>
+    /// Writes the text representing of an ini configuration to the file.
+    /// </summary>
+    [Obsolete("Use Configuration.Ini.ToFile(FileInfo) instead. This method will be removed in future versions.")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    public static Result<Unit, string> WriteTo(this Ini ini, FileInfo fileInfo)
+    {
+        return ini.ToFile(fileInfo);
+    }
+
+    /// <summary>
+    /// Writes the text representing of an ini configuration to the text stream.
+    /// </summary>
+    [Obsolete("Use Configuration.Ini.ToWriter(TextWriter) instead. This method will be removed in future versions.")]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    public static Result<Unit, string> WriteTo(this Ini ini, TextWriter textWriter)
+    {
+        return ini.ToWriter(textWriter);
+    }
+}
+
+/// <summary>
+/// Static methods.
+/// </summary>
 public static class Prelude
 {
     /// <summary>
